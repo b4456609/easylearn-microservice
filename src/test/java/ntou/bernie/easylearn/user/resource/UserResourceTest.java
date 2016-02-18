@@ -1,0 +1,41 @@
+package ntou.bernie.easylearn.user.resource;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.junit.Test;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+
+import ntou.bernie.easylearn.user.core.User;
+
+public class UserResourceTest {
+
+	@Test
+	public void testUserJsonDeserialize() throws JsonParseException, JsonMappingException, IOException {
+		String json = "{\"id\":\"1009840175700426\",\"name\":\"\u8303\u632F\u539F\",\"setting\":{\"wifi_sync\":true,\"mobile_network_sync\":true,\"last_sync_time\":1450325981000,\"modified\":true,\"version\":25},\"bookmark\":[],\"folder\":[]}";
+		
+		ObjectMapper objectMapper = new ObjectMapper()
+				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+				.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+		User user = objectMapper.readValue(json, User.class);		
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
+		Set<ConstraintViolation<User>> constraintViolations =
+			      validator.validate( user );
+		assertEquals(0,constraintViolations.size());
+	}
+	
+
+}

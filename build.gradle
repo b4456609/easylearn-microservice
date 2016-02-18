@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+version = '1.0'
+mainClassName = 'ntou.bernie.easylearn.EasylearnAPP'
+
+project.ext {
+    configPath = "$rootProject.projectDir/config/"
+    dropwizardVersion = '0.9.2'
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                   'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.mongodb.morphia:morphia:1.1.1'
+    compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+run {
+    args 'server', configPath + 'config.yml'
+}
