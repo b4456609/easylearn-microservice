@@ -15,7 +15,8 @@ import java.util.List;
 
 public interface UserDAO extends DAO<User, ObjectId> {
 
-	public List<User> getByUserId(String userId);
+	public User getByUserId(String userId);
 	public boolean isExist(String userId);
+	public boolean isConflict(User user);
 
 }

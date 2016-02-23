@@ -88,8 +88,8 @@ public class UserResource {
 				user.setLastUpTime(new DateTime().getMillis());
 				userDAO.save(user);
 				//return user object
-				User userResponse = datastore.createQuery(User.class).field("id").equal(user.getId()).get();
-				String userResponseJson = objectMapper.writeValueAsString(userResponse);
+				User userRespnse = userDAO.getByUserId(user.getId());
+				String userResponseJson = objectMapper.writeValueAsString(userRespnse);
 				return Response.ok(userResponseJson ,MediaType.APPLICATION_JSON).build();
 			}
 			

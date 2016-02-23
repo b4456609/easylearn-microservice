@@ -17,7 +17,18 @@ public class UserDAOImp extends BasicDAO<User, ObjectId> implements UserDAO {
     }
 
     @Override
-    public List<User> getByUserId(String userId) {
-        return createQuery().field("id").equal(userId).asList();
+    public User getByUserId(String userId) {
+        return createQuery().field("id").equal(userId).get();
     }
+
+    @Override
+    public boolean isExist(String userId) {
+        User user = getByUserId(userId);
+        if(user == null)
+            return false;
+        else
+            return true;
+    }
+
+
 }
