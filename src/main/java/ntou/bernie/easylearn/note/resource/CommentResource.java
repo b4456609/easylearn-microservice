@@ -50,7 +50,7 @@ public class CommentResource {
 		if (note == null) {
 			throw new WebApplicationException(404);
 		}
-		return note.getComments();
+		return note.getComment();
 	}
 
 	@POST

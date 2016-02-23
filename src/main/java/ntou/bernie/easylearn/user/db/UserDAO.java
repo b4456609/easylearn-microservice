@@ -8,46 +8,14 @@ import org.mongodb.morphia.dao.BasicDAO;
 import com.mongodb.MongoClient;
 
 import ntou.bernie.easylearn.user.core.User;
+import org.mongodb.morphia.dao.DAO;
+
+import java.util.List;
 
 
-public class UserDAO extends BasicDAO<User, ObjectId> {
+public interface UserDAO extends DAO<User, ObjectId> {
 
-	/**
-	 * @param entityClass
-	 * @param ds
-	 */
-	public UserDAO(Class<User> entityClass, Datastore ds) {
-		super(entityClass, ds);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param entityClass
-	 * @param mongoClient
-	 * @param morphia
-	 * @param dbName
-	 */
-	public UserDAO(Class<User> entityClass, MongoClient mongoClient, Morphia morphia, String dbName) {
-		super(entityClass, mongoClient, morphia, dbName);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param ds
-	 */
-	public UserDAO(Datastore ds) {
-		super(ds);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param mongoClient
-	 * @param morphia
-	 * @param dbName
-	 */
-	public UserDAO(MongoClient mongoClient, Morphia morphia, String dbName) {
-		super(mongoClient, morphia, dbName);
-		// TODO Auto-generated constructor stub
-	}
+	public List<User> getByUserId(String userId);
+	public boolean isExist(String userId);
 
 }

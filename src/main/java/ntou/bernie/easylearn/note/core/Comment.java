@@ -1,5 +1,6 @@
 package ntou.bernie.easylearn.note.core;
 
+import com.google.common.base.Optional;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.annotations.Embedded;
 

@@ -3,6 +3,8 @@
  */
 package ntou.bernie.easylearn;
 
+import ntou.bernie.easylearn.mobile.resource.MobileResource;
+import ntou.bernie.easylearn.pack.resource.PackResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,12 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
 		
 		CommentResource commentResource = new CommentResource(morphia.getDatastore());
 		environment.jersey().register(commentResource);
+
+		PackResource packResource = new PackResource(morphia.getDatastore());
+		environment.jersey().register(packResource);
+
+		MobileResource mobileResource = new MobileResource();
+		environment.jersey().register(mobileResource);
 
 		// database health check
 		environment.healthChecks().register("database",

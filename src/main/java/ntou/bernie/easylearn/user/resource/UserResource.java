@@ -11,14 +11,13 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import ntou.bernie.easylearn.user.core.Folder;
+import ntou.bernie.easylearn.user.db.UserDAOImp;
 import org.joda.time.DateTime;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.QueryResults;
@@ -39,25 +38,19 @@ import ntou.bernie.easylearn.user.db.UserDAO;
  */
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
-	private Datastore datastore;
+	private final UserDAO userDAO;
 
 
 	/**
 	 * @param datastore
 	 */
 	public UserResource(Datastore datastore) {
-		this.datastore = datastore;
+		this.userDAO = new UserDAOImp(User.class,datastore);
 	}
 
-	@GET
-	@Timed
-	public List<User> getAllUser() {
-		QueryResults<User> users = new UserDAO(User.class, datastore).find();
-
-		return users.asList();
-	}
 
 	@POST
 	@Timed
@@ -72,6 +65,8 @@ public class UserResource {
 					.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 					.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 			User user = objectMapper.readValue(userJson, User.class);
+			List<Folder> folder = objectMapper.readValue(userJson, new TypeReference<List<Folder>>(){});
+			user.setFolder(folder);
 			
 			//validation json
 			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -81,17 +76,17 @@ public class UserResource {
 			if(constraintViolations.size() > 0){
 				LOGGER.info("validation not pass");
 				for(ConstraintViolation<User> violation: constraintViolations){
-					LOGGER.info(violation.getMessage());
+					LOGGER.info(violation.toString());
 				}
 				throw new WebApplicationException(Response.Status.BAD_REQUEST);
 			}
 			
 			// check if new user 
-			if(!user.isExist(datastore)){
+			if(!userDAO.isExist(user.getId())){
 				LOGGER.info("user not exist");
 				user.setCreateTime(new DateTime().getMillis());
 				user.setLastUpTime(new DateTime().getMillis());
-				datastore.save(user);
+				userDAO.save(user);
 				//return user object
 				User userResponse = datastore.createQuery(User.class).field("id").equal(user.getId()).get();
 				String userResponseJson = objectMapper.writeValueAsString(userResponse);

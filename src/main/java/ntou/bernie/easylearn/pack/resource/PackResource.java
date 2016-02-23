@@ -3,7 +3,11 @@ package ntou.bernie.easylearn.pack.resource;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,6 +38,7 @@ import ntou.bernie.easylearn.pack.core.Version;
 public class PackResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PackResource.class);
 	private Datastore datastore;
+	private ObjectMapper objectMapper;
 	@Context
 	UriInfo uriInfo;
 
@@ -42,6 +47,8 @@ public class PackResource {
 	 */
 	public PackResource(Datastore datastore) {
 		this.datastore = datastore;
+		objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 	}
 
 	@GET
@@ -63,7 +70,7 @@ public class PackResource {
 		Pack pack = datastore.createQuery(Pack.class).field("id").equal(packId).get();
 		if (pack == null)
 			throw new WebApplicationException(404);
-		return pack.getVersions();
+		return pack.getVersion();
 	}
 
 	@POST
@@ -71,41 +78,57 @@ public class PackResource {
 	public Response addPack(String packJson) {
 		try {
 			// map to comment object
-			ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-					.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 			Pack pack = objectMapper.readValue(packJson, Pack.class);
+
+			// pack json validation
+			packValidation(pack);
 
 			// save to db
 			datastore.save(pack);
 
 			// build response
-			URI userUri = uriInfo.getAbsolutePathBuilder().path("fds").build();
+			URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();
 			return Response.created(userUri).build();
 		} catch (IOException e) {
 			LOGGER.info("json pharse problem", e);
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		}
 	}
-	
+
 	@POST
-	@Path("/{packId}/sync")
+	@Path("/sync")
 	@Timed
 	public Response syncPack(String packJson) {
 		try {
 			// map to comment object
-			ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-					.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 			Pack pack = objectMapper.readValue(packJson, Pack.class);
 
-			// save to db
-			datastore.save(pack);
+			// pack json validation
+			packValidation(pack);
+
+            // sync pack
+            pack.sync(datastore);
 
 			// build response
-			URI userUri = uriInfo.getAbsolutePathBuilder().path("fds").build();
+			URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();
 			return Response.created(userUri).build();
 		} catch (IOException e) {
-			LOGGER.info("json pharse problem", e);
+			LOGGER.info("json pharse problem" + e);
 			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
+	}
+
+	private void packValidation(Pack pack){
+		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+		//json validation
+		Set<ConstraintViolation<Pack>> constraintViolations = validator.validate(pack);
+		for(ConstraintViolation<Pack> constraintViolation:constraintViolations){
+			LOGGER.warn(constraintViolation.toString());
+		}
+		if (constraintViolations.size() > 0){
+			//json validation fail
+			LOGGER.warn("json validation fail");
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
 	}
 }
