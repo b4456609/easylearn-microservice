@@ -2,8 +2,11 @@ package ntou.bernie.easylearn.user.db;
 
 import ntou.bernie.easylearn.user.core.User;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 
 import java.util.List;
 
@@ -30,5 +33,21 @@ public class UserDAOImp extends BasicDAO<User, ObjectId> implements UserDAO {
             return true;
     }
 
+    @Override
+    public boolean isConflict(User user) {
+        User dbUser = getByUserId(user.getId());
+        int dbVersion = dbUser.getSetting().getVersion();
+        boolean isConflict = user.getSetting().isConflict(dbVersion);
+        return isConflict;
+    }
 
+    @Override
+    public void sync(User user) {
+        Query<User> userQuery = createQuery().field("id").equal(user.getId());
+        UpdateOperations<User> updateOptions = createUpdateOperations();
+        updateOptions.set("lastUpTime", new DateTime().getMillis());
+        updateOptions.set("setting", user.getSetting());
+        updateOptions.set("folder", user.getFolder());
+        update(userQuery, updateOptions);
+    }
 }

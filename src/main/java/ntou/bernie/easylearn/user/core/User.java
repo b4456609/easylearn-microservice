@@ -82,37 +82,6 @@ public class User {
 		this.bookmark = bookmark;
 	}
 
-
-	public void sync(Datastore datastore) {
-		// check user exist in db
-		Query<User> userQuery = datastore.createQuery(User.class).field("id").equal(id);
-		UpdateOperations<User> updateOptions = datastore.createUpdateOperations(User.class);
-		updateOptions.set("lastUpTime", new DateTime().getMillis());
-		updateOptions.set("setting", setting);
-		updateOptions.set("folder", folder);
-		datastore.update(userQuery, updateOptions);
-		LOGGER.debug("sync",userQuery.toString());
-	}
-
-	public boolean isExist(Datastore datastore) {
-		// check user exist in db
-		User user = datastore.createQuery(User.class).field("id").equal(id).get();
-		if (user == null) {
-			LOGGER.debug("user not exist");
-			return false;
-		}
-		LOGGER.debug("user exist");
-		return true;
-	}
-
-	public boolean isConflict(Datastore datastore) {
-		User user = datastore.createQuery(User.class).field("id").equal(id).get();
-		int dbVersion = user.getSetting().getVersion();
-		boolean isConflict = setting.isConflict(dbVersion);
-		LOGGER.debug(user.toString() + "dbVersion:" + dbVersion + "isConflict:" + isConflict);
-		return isConflict;
-	}
-
 	/**
 	 * @return the userId
 	 */

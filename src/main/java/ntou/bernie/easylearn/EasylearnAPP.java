@@ -5,6 +5,8 @@ package ntou.bernie.easylearn;
 
 import ntou.bernie.easylearn.mobile.resource.MobileResource;
 import ntou.bernie.easylearn.pack.resource.PackResource;
+import ntou.bernie.easylearn.user.core.User;
+import ntou.bernie.easylearn.user.db.UserDAOImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
 		// mongodb driver
 		MorphiaService morphia = new MorphiaService(configuration.getDatabaseConfiguration());
 
-		UserResource userResource = new UserResource(morphia.getDatastore());
+		UserResource userResource = new UserResource(new UserDAOImp(User.class, morphia.getDatastore()));
 		environment.jersey().register(userResource);
 
 		NoteResource noteResource = new NoteResource(morphia.getDatastore());

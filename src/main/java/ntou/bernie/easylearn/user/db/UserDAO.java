@@ -18,5 +18,6 @@ public interface UserDAO extends DAO<User, ObjectId> {
 	public User getByUserId(String userId);
 	public boolean isExist(String userId);
 	public boolean isConflict(User user);
+	public void sync(User user);
 
 }

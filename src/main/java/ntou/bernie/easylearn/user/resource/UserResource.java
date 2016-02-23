@@ -43,17 +43,14 @@ public class UserResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
 	private final UserDAO userDAO;
 
-
-	/**
-	 * @param datastore
-	 */
-	public UserResource(Datastore datastore) {
-		this.userDAO = new UserDAOImp(User.class,datastore);
+	public UserResource(UserDAO userDAO) {
+		this.userDAO = userDAO;
 	}
 
 
 	@POST
 	@Timed
+	@Path("/sync")
 	public Response syncUser(String userJson) {
 		LOGGER.debug("Request content",userJson);
 		if (userJson == null)
@@ -94,16 +91,16 @@ public class UserResource {
 			}
 			
 			//check data conflict
-			if(user.isConflict(datastore)){
+			if(userDAO.isConflict(user)){
 				LOGGER.info("conflict");
 				throw new WebApplicationException(Response.Status.CONFLICT);
 			}
 
 			LOGGER.info("sync to db");
-			user.sync(datastore);
+			userDAO.sync(user);
 			//return user object
 			LOGGER.info("Build response");
-			User userResponse = datastore.createQuery(User.class).field("id").equal(user.getId()).get();
+			User userResponse = userDAO.getByUserId(user.getId());
 			String userResponseJson = objectMapper.writeValueAsString(userResponse);
 			return Response.ok(userResponseJson ,MediaType.APPLICATION_JSON).build();
 			
