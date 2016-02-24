@@ -1,6 +1,7 @@
 package ntou.bernie.easylearn.user.resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,6 +16,7 @@ import javax.validation.ValidatorFactory;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.*;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import ntou.bernie.easylearn.user.db.UserDAO;
 import org.bson.types.ObjectId;
@@ -22,10 +24,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
 import ntou.bernie.easylearn.user.core.User;
 
@@ -61,11 +59,15 @@ public class UserResourceTest {
 		User user = objectMapper.readValue(json, User.class);
 
 		when(userDAO.isExist("1009840175700426")).thenReturn(false);
-		//when(userDAO.save(user)).thenReturn("some");
 		when(userDAO.getByUserId("1009840175700426")).thenReturn(user);
 
 		Response result = resources.client().target("/user/sync").request().post(Entity.json(json));
-		System.out.println(result);
+		String entity = result.readEntity(String.class);
+
+		JsonNode orginJsonNode = objectMapper.readTree(json);
+		JsonNode resultJsonNode = objectMapper.readTree(entity);
+
+		assertTrue(orginJsonNode.equals(resultJsonNode));
 
 	}
 

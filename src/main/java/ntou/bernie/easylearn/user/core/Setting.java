@@ -10,27 +10,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Embedded
 public class Setting {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Setting.class);
+	@JsonProperty
 	boolean wifiSync;
+	@JsonProperty
 	boolean mobileNetworkSync;
+	@JsonProperty
 	int version;
 	@Transient
+	@JsonProperty
 	boolean modified;
+	@JsonProperty
+	long lastSyncTime;
 
-	public Setting() {
+	public boolean isModified() {
+		return modified;
 	}
 
-	/**
-	 * @param wifiSync
-	 * @param mobileNetworkSync
-	 * @param version
-	 * @param modified
-	 */
-	public Setting(boolean wifiSync, boolean mobileNetworkSync, int version, boolean modified) {
+	public void setModified(boolean modified) {
+		this.modified = modified;
+	}
+
+	public long getLastSyncTime() {
+		return lastSyncTime;
+	}
+
+	public void setLastSyncTime(long lastSyncTime) {
+		this.lastSyncTime = lastSyncTime;
+	}
+
+	public Setting(boolean wifiSync, boolean mobileNetworkSync, int version, boolean modified, long lastSyncTime) {
 		this.wifiSync = wifiSync;
 		this.mobileNetworkSync = mobileNetworkSync;
 		this.version = version;
 		this.modified = modified;
+		this.lastSyncTime = lastSyncTime;
 	}
+
+	public Setting() {
+	}
+
 
 	public boolean isConflict(int dbVersion) {
 		LOGGER.debug("dbVersion:"+ dbVersion +", version:" + this.version +", modified:" + this.modified + ((dbVersion != version) && modified));

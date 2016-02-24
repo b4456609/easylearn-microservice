@@ -25,14 +25,14 @@ public class NoteTest {
 				.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 		String jsonInString = mapper.writeValueAsString(note);
 		
-		String json = "{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_time\",\"user_id\":\"user_id\",\"user_name\":\"user_name\",\"version_id\":\"version_id\",\"comments\":[{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"},{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"}]}";
+		String json = "{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_time\",\"user_id\":\"user_id\",\"user_name\":\"user_name\",\"version_id\":\"version_id\",\"comment\":[{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"},{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"}]}";
 
 		assertEquals(json, jsonInString);
 	}
 
 	@Test
 	public void tesDeStyle() throws IOException {
-		String json = "{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_time\",\"user_id\":\"user_id\",\"user_name\":\"user_name\",\"version_id\":\"version_id\",\"comments\":[{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"},{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"}]}";
+		String json = "{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_time\",\"user_id\":\"user_id\",\"user_name\":\"user_name\",\"version_id\":\"version_id\",\"comment\":[{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"},{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"}]}";
 
 		ObjectMapper mapper = new ObjectMapper()
 				.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);

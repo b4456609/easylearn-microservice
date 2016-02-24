@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import ntou.bernie.easylearn.user.core.Folder;
 import ntou.bernie.easylearn.user.db.UserDAOImp;
 import org.joda.time.DateTime;
@@ -62,7 +63,9 @@ public class UserResource {
 					.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 					.setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 			User user = objectMapper.readValue(userJson, User.class);
-			List<Folder> folder = objectMapper.readValue(userJson, new TypeReference<List<Folder>>(){});
+
+			JsonNode jsonNode = objectMapper.readTree(userJson).get("folder");
+			List<Folder> folder = objectMapper.readValue(jsonNode.toString(), new TypeReference<List<Folder>>(){});
 			user.setFolder(folder);
 			
 			//validation json
