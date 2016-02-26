@@ -94,7 +94,6 @@ public class Version {
             return dbContent;
         }
 
-        System.out.println("hi");
 
         StringBuffer dbContentBuffer = new StringBuffer(dbContent);
         StringBuffer contentBuffer = new StringBuffer(content);

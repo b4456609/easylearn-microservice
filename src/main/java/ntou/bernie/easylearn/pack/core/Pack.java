@@ -76,45 +76,10 @@ public class Pack {
         this.version = version;
     }
 
-
-    public void sync(Datastore datastore) {
-        //retrieve from db
-        Pack pack = datastore.createQuery(Pack.class)
-                .field("id").equal(id).get();
-
-        //The pack not exist in database
-        if (pack==null) {
-            datastore.save(this);
-            return;
-        }
-
-        //delete or sync
-        Iterator<Version> iterator = version.iterator();
-        while (iterator.hasNext()) {
-            Version version = iterator.next();
-            if (version.getModified().equals("delete"))
-                //delete version
-                iterator.remove();
-            else if (version.getModified().equals("false")) {
-                //not modified
-                continue;
-            } else {
-                //sync version
-                version.sync(getVersionById(version.getId(), pack));
-            }
-        }
-
-        //update pack
-        UpdateOperations<Pack> packUpdateOperations = datastore.createUpdateOperations(Pack.class)
-                .set("isPublic", isPublic)
-                .set("version", version);
-        datastore.update(pack, packUpdateOperations);
-    }
-
-    private Version getVersionById(String id, Pack pack) {
-        for (Version version : pack.version) {
-            if (version.getId() == id) {
-                return version;
+    public Version getVersionById(String id) {
+        for (Version item : version) {
+            if (item.getId() == id) {
+                return item;
             }
         }
         return null;

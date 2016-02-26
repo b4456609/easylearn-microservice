@@ -3,7 +3,9 @@ package ntou.bernie.easylearn.pack.resource;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -20,6 +22,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
+import ntou.bernie.easylearn.pack.db.PackDAO;
 import org.mongodb.morphia.Datastore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +43,16 @@ import ntou.bernie.easylearn.pack.core.Version;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PackResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PackResource.class);
-	private Datastore datastore;
-	private ObjectMapper objectMapper;
+	private PackDAO packDAO;
+	private final ObjectMapper objectMapper;
 	@Context
 	UriInfo uriInfo;
 
 	/**
-	 * @param datastore
+	 * @param packDAO
 	 */
-	public PackResource(Datastore datastore) {
-		this.datastore = datastore;
+	public PackResource(PackDAO packDAO) {
+		this.packDAO = packDAO;
 		objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 	}
@@ -56,7 +62,7 @@ public class PackResource {
 	@Timed
 	public Pack getPack(@PathParam("packId") String packId) {
 		// query from db
-		Pack pack = datastore.createQuery(Pack.class).field("id").equal(packId).get();
+		Pack pack = packDAO.getPackById(packId);
 		if (pack == null)
 			throw new WebApplicationException(404);
 		return pack;
@@ -67,7 +73,7 @@ public class PackResource {
 	@Timed
 	public List<Version> getPackVersion(@PathParam("packId") String packId) {
 		// query from db
-		Pack pack = datastore.createQuery(Pack.class).field("id").equal(packId).get();
+		Pack pack = packDAO.getPackById(packId);
 		if (pack == null)
 			throw new WebApplicationException(404);
 		return pack.getVersion();
@@ -84,7 +90,7 @@ public class PackResource {
 			packValidation(pack);
 
 			// save to db
-			datastore.save(pack);
+			packDAO.save(pack);
 
 			// build response
 			URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();
@@ -98,6 +104,35 @@ public class PackResource {
 	@POST
 	@Path("/sync")
 	@Timed
+	public Response syncPacks(String syncJson) {
+		try {
+			ReadContext ctx = JsonPath.parse(syncJson);
+
+			List<Object> packs = JsonPath
+					.parse(syncJson)
+					.read("$..[?(@.cover_filename)]]", List.class);
+			// map to comment object
+			List<Pack> packList = objectMapper.readValue(syncJson, new TypeReference<List<Pack>>(){});
+			for(Pack pack: packList){
+				// pack json validation
+				packValidation(pack);
+
+				// sync pack
+				packDAO.sync(pack);
+			}
+
+			// build response
+			//URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();
+			return Response.ok().build();
+		} catch (IOException e) {
+			LOGGER.info("json pharse problem" + e);
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
+	}
+
+	@POST
+	@Path("/sync/single")
+	@Timed
 	public Response syncPack(String packJson) {
 		try {
 			// map to comment object
@@ -107,7 +142,7 @@ public class PackResource {
 			packValidation(pack);
 
             // sync pack
-            pack.sync(datastore);
+            packDAO.sync(pack);
 
 			// build response
 			URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();

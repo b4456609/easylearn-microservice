@@ -3,6 +3,7 @@ package ntou.bernie.easylearn.user.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -203,7 +204,9 @@ public class UserResourceTest {
 				"  }\n" +
 				"}";
 
-		User user = objectMapper.readValue(json, User.class);
+		String response = "{\"id\":\"1009840175700426\",\"name\":\"范振原\",\"setting\":{\"wifi_sync\":true,\"mobile_network_sync\":true,\"version\":26,\"modified\":false,\"last_sync_time\":1455874940000},\"folder\":[{\"id\":\"allfolder\",\"name\":\"全部的懶人包\",\"pack\":[\"pack1439355907459\",\"pack1439367500493\",\"pack1439370245981\",\"pack1439372921598\",\"pack1439381800612\",\"pack1439385129482\",\"pack1439394796784\",\"pack1439451391246\",\"pack1439471856230\"]},{\"id\":\"allPackId\",\"name\":\"All\",\"pack\":[\"pack1439355907459\",\"pack1439370245981\",\"pack1439372921598\",\"pack1439381800612\",\"pack1439385129482\",\"pack1439394796784\",\"pack1450275282853\",\"pack1450347155192\"]},{\"id\":\"fjoeiwjowfe\",\"name\":\"我的最愛\",\"pack\":[]},{\"id\":\"shareFolder\",\"name\":\"與你分享懶人包\",\"pack\":[\"pack1439394796784\"]}],\"bookmark\":[]}";
+
+		User user = objectMapper.readValue(response, User.class);
 
 		when(userDAO.isExist("1009840175700426")).thenReturn(false);
 		when(userDAO.getByUserId("1009840175700426")).thenReturn(user);
@@ -211,10 +214,14 @@ public class UserResourceTest {
 		Response result = resources.client().target("/user/sync").request().post(Entity.json(json));
 		String entity = result.readEntity(String.class);
 
-		JsonNode orginJsonNode = objectMapper.readTree(json);
+
+		verify(userDAO).isExist("1009840175700426");
+		verify(userDAO).getByUserId("1009840175700426");
+
+		JsonNode responseJsonNode = objectMapper.readTree(response);
 		JsonNode resultJsonNode = objectMapper.readTree(entity);
 
-		assertTrue(orginJsonNode.equals(resultJsonNode));
+		assertTrue(responseJsonNode.equals(resultJsonNode));
 
 	}
 }

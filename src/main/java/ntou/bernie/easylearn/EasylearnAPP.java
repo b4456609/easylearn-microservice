@@ -4,6 +4,8 @@
 package ntou.bernie.easylearn;
 
 import ntou.bernie.easylearn.mobile.resource.MobileResource;
+import ntou.bernie.easylearn.pack.core.Pack;
+import ntou.bernie.easylearn.pack.db.PackDAOImp;
 import ntou.bernie.easylearn.pack.resource.PackResource;
 import ntou.bernie.easylearn.user.core.User;
 import ntou.bernie.easylearn.user.db.UserDAOImp;
@@ -50,7 +52,7 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
 		CommentResource commentResource = new CommentResource(morphia.getDatastore());
 		environment.jersey().register(commentResource);
 
-		PackResource packResource = new PackResource(morphia.getDatastore());
+		PackResource packResource = new PackResource(new PackDAOImp(Pack.class, morphia.getDatastore()));
 		environment.jersey().register(packResource);
 
 		MobileResource mobileResource = new MobileResource();

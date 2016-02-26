@@ -28,9 +28,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -62,16 +60,21 @@ public class UserResource {
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                     .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 
+            JsonNode jsonNode = objectMapper.readTree(userJson);
+
             //user json
-            User user = objectMapper.readValue(userJson, User.class);
+            JsonNode userJsonNode = jsonNode.get("user");
+            User user = objectMapper.readValue(userJsonNode.toString(), User.class);
 
             //folder json
-            JsonNode jsonNode = objectMapper.readTree(userJson).get("folder");
-            List<Folder> folder = objectMapper.readValue(jsonNode.toString(), new TypeReference<List<Folder>>() {
+            JsonNode folderJsonNode = jsonNode.get("folder");
+            List<Folder> folder = objectMapper.readValue(folderJsonNode.toString(), new TypeReference<List<Folder>>() {
             });
             user.setFolder(folder);
 
             //bookmark json
+            Bookmark bookmark = new Bookmark();
+            user.setBookmark(new ArrayList());
 //            String bookmarkJson = extractBookmark(userJson);
 //            List<Bookmark> bookmark = objectMapper.readValue(jsonNode.toString(), new TypeReference<List<Bookmark>>() {
 //            });
