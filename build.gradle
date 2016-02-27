@@ -1,21 +1,25 @@
-apply plugin: 'java'
+plugins {
+  id 'java' // or 'groovy' Must be explicitly applied
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+
+
 apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
 
 sourceCompatibility = 1.8
 version = '1.0'
 mainClassName = 'ntou.bernie.easylearn.EasylearnAPP'
 
+
 project.ext {
     configPath = "$rootProject.projectDir/config/"
     dropwizardVersion = '0.9.2'
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Quickstart',
-                   'Implementation-Version': version
-    }
 }
 
 repositories {
@@ -28,10 +32,18 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.3'
     compile 'org.mongodb.morphia:morphia:1.1.1'
     compile group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
-    compile 'io.dropwizard:dropwizard-testing:' + dropwizardVersion
+    testCompile 'io.dropwizard:dropwizard-testing:' + dropwizardVersion
     testCompile group: 'junit', name: 'junit', version: '4.+'
     testCompile "org.mockito:mockito-core:1.+"
 }
+
+shadowJar {
+    manifest {
+        attributes("Implementation-Title": "Easylearn", "Implementation-Version": 1.0)
+    }
+    transform(ServiceFileTransformer)
+}
+
 
 run {
     args 'server', configPath + 'config.yml'
