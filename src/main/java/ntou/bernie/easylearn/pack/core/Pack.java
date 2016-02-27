@@ -1,18 +1,13 @@
 package ntou.bernie.easylearn.pack.core;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import com.google.common.base.Optional;
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.query.UpdateOperations;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Pack {

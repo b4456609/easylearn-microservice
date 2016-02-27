@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -14,7 +13,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by bernie on 2016/2/19.
@@ -164,7 +163,7 @@ public class PackTest {
         Validator validator = factory.getValidator();
         Set<ConstraintViolation<Pack>> constraintViolations = validator.validate(pack);
 
-        for(ConstraintViolation<Pack> constraintViolation:constraintViolations){
+        for (ConstraintViolation<Pack> constraintViolation : constraintViolations) {
             System.out.println(constraintViolation.toString());
         }
 

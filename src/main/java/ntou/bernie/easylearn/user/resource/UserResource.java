@@ -28,8 +28,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author bernie
@@ -48,21 +50,21 @@ public class UserResource {
     @GET
     @Timed
     @Path("/{id}/folder")
-    public List<Folder> getUserFolder(@PathParam("id") String userId){
-        if(userId == null)
-            throw  new WebApplicationException(400);
+    public List<Folder> getUserFolder(@PathParam("id") String userId) {
+        if (userId == null)
+            throw new WebApplicationException(400);
         return userDAO.getByUserId(userId).getFolder();
     }
 
     @GET
     @Timed
     @Path("/{id}/pack")
-    public List<String> getUserPack(@PathParam("id") String userId){
-        if(userId == null)
-            throw  new WebApplicationException(400);
+    public List<String> getUserPack(@PathParam("id") String userId) {
+        if (userId == null)
+            throw new WebApplicationException(400);
         List<Folder> folders = userDAO.getByUserId(userId).getFolder();
         List<String> packIds = new ArrayList<>();
-        for(Folder folder : folders){
+        for (Folder folder : folders) {
             packIds.addAll(folder.getPack());
         }
         return packIds;
@@ -128,8 +130,7 @@ public class UserResource {
             else if (userDAO.isConflict(user)) {
                 LOGGER.info("conflict");
                 throw new WebApplicationException(Response.Status.CONFLICT);
-            }
-            else{
+            } else {
 
                 LOGGER.info("sync to db");
                 userDAO.sync(user);
@@ -163,7 +164,7 @@ public class UserResource {
         ArrayNode bookmarksJsonNode = objectMapper.createArrayNode();
 
 
-        for(Map<String, Object> map : versions){
+        for (Map<String, Object> map : versions) {
             System.out.println(map.keySet());
 
             System.out.println(map.get("bookmark").toString());

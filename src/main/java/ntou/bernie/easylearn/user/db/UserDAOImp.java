@@ -1,6 +1,5 @@
 package ntou.bernie.easylearn.user.db;
 
-import ntou.bernie.easylearn.pack.core.Pack;
 import ntou.bernie.easylearn.user.core.User;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -8,8 +7,6 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.dao.BasicDAO;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
-
-import java.util.List;
 
 /**
  * Created by bernie on 2016/2/20.
@@ -28,7 +25,7 @@ public class UserDAOImp extends BasicDAO<User, ObjectId> implements UserDAO {
     @Override
     public boolean isExist(String userId) {
         User user = getByUserId(userId);
-        if(user == null)
+        if (user == null)
             return false;
         else
             return true;

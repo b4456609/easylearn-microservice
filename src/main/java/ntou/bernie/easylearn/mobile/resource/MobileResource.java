@@ -1,23 +1,22 @@
 package ntou.bernie.easylearn.mobile.resource;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import ntou.bernie.easylearn.note.resource.NoteResource;
 import ntou.bernie.easylearn.pack.resource.PackResource;
 import ntou.bernie.easylearn.user.resource.UserResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Created by bernie on 2016/2/19.
@@ -45,17 +44,17 @@ public class MobileResource {
         Response packResp = packResource.syncPacks(syncJson);
         LOGGER.debug(packResp.toString());
 
-        if(userResp.getStatus() != 200 || packResp.getStatus() != 200)
+        if (userResp.getStatus() != 200 || packResp.getStatus() != 200)
             return Response.serverError().build();
 
-        String userJson = (String)userResp.getEntity();
+        String userJson = (String) userResp.getEntity();
         LOGGER.debug(userJson);
 
         try {
-            ObjectNode respNode = (ObjectNode)objectMapper.readTree(userJson);
+            ObjectNode respNode = (ObjectNode) objectMapper.readTree(userJson);
             String userId = respNode.get("user").get("id").textValue();
             Response packsResp = packResource.getUserPacks(userId);
-            JsonNode packsNode = objectMapper.readTree((String)packsResp.getEntity());
+            JsonNode packsNode = objectMapper.readTree((String) packsResp.getEntity());
 
             for (final JsonNode pack : packsNode) {
                 respNode.set(pack.get("id").asText(), pack);

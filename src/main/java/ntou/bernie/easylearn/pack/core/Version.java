@@ -43,21 +43,6 @@ public class Version {
     public Version() {
     }
 
-    @Override
-    public String toString() {
-        return "Version{" +
-                "id='" + id + '\'' +
-                ", content='" + content + '\'' +
-                ", createTime='" + createTime + '\'' +
-                ", isPublic='" + isPublic + '\'' +
-                ", creatorUserId='" + creatorUserId + '\'' +
-                ", creatorUserName='" + creatorUserName + '\'' +
-                ", version=" + version +
-                ", viewCount=" + viewCount +
-                ", private_id='" + private_id + '\'' +
-                '}';
-    }
-
     /**
      * @param id
      * @param content
@@ -82,6 +67,21 @@ public class Version {
         this.viewCount = viewCount;
         this.private_id = private_id;
         this.file = file;
+    }
+
+    @Override
+    public String toString() {
+        return "Version{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", isPublic='" + isPublic + '\'' +
+                ", creatorUserId='" + creatorUserId + '\'' +
+                ", creatorUserName='" + creatorUserName + '\'' +
+                ", version=" + version +
+                ", viewCount=" + viewCount +
+                ", private_id='" + private_id + '\'' +
+                '}';
     }
 
     public void sync(Version dbVersion) {

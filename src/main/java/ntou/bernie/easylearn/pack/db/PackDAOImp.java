@@ -13,19 +13,19 @@ import java.util.List;
 /**
  * Created by bernie on 2016/2/26.
  */
-public class PackDAOImp extends BasicDAO<Pack,ObjectId> implements PackDAO{
+public class PackDAOImp extends BasicDAO<Pack, ObjectId> implements PackDAO {
     public PackDAOImp(Class<Pack> entityClass, Datastore ds) {
         super(entityClass, ds);
     }
 
     @Override
     public boolean isExist(String packId) {
-        return exists("id",packId);
+        return exists("id", packId);
     }
 
     @Override
     public void sync(Pack pack) {
-        if(!exists("id",pack.getId())){
+        if (!exists("id", pack.getId())) {
             save(pack);
             return;
         }
@@ -52,12 +52,12 @@ public class PackDAOImp extends BasicDAO<Pack,ObjectId> implements PackDAO{
         UpdateOperations<Pack> updateOp = createUpdateOperations()
                 .set("isPublic", pack.getIsPublic())
                 .set("version", pack.getVersion());
-        update(createQuery().field("id").equal(pack.getId()),updateOp);
+        update(createQuery().field("id").equal(pack.getId()), updateOp);
     }
 
     @Override
     public Pack getPackById(String packId) {
-        return findOne("id",packId);
+        return findOne("id", packId);
     }
 
     @Override

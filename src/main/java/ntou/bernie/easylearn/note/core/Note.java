@@ -1,27 +1,20 @@
 package ntou.bernie.easylearn.note.core;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Optional;
+import io.dropwizard.jackson.JsonSnakeCase;
+import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.annotations.*;
+import org.mongodb.morphia.query.UpdateOperations;
+
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.base.Optional;
-import org.bson.types.ObjectId;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.IndexOptions;
-import org.mongodb.morphia.annotations.Indexed;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.dropwizard.jackson.JsonSnakeCase;
-import org.mongodb.morphia.query.UpdateOperations;
-
-import javax.validation.constraints.NotNull;
 
 @Entity
 @JsonSnakeCase
@@ -200,12 +193,12 @@ public class Note {
         comment = new ArrayList<Comment>(comments);
 
         UpdateOperations<Note> noteUpdateOperations = datastore.createUpdateOperations(Note.class).set("comment", comment);
-        datastore.update(note,noteUpdateOperations);
+        datastore.update(note, noteUpdateOperations);
     }
 
-    private Optional<Comment> getCommentById(String id){
-        for (Comment commentItem : comment){
-            if(commentItem.getId() == id)
+    private Optional<Comment> getCommentById(String id) {
+        for (Comment commentItem : comment) {
+            if (commentItem.getId() == id)
                 return Optional.of(commentItem);
         }
         return Optional.absent();

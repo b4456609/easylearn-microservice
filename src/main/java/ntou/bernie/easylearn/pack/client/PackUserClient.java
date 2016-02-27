@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import ntou.bernie.easylearn.user.resource.UserResource;
 
 import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.Context;
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public class PackUserClient {
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
     }
 
-    public String getUserFolder(String userId, ResourceContext rc){
+    public String getUserFolder(String userId, ResourceContext rc) {
         UserResource userResource = rc.getResource(UserResource.class);
         try {
             return objectMapper.writeValueAsString(userResource.getUserFolder(userId));
@@ -32,7 +31,7 @@ public class PackUserClient {
         return null;
     }
 
-    public List<String> getUserPacks(String userId, ResourceContext rc){
+    public List<String> getUserPacks(String userId, ResourceContext rc) {
         UserResource userResource = rc.getResource(UserResource.class);
         return userResource.getUserPack(userId);
     }

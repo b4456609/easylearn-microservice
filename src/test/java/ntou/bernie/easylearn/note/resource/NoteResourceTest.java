@@ -10,11 +10,7 @@ import ntou.bernie.easylearn.note.core.Note;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by bernie on 2016/2/19.
@@ -164,7 +160,8 @@ public class NoteResourceTest {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 
-        List<Note> notes = mapper.readValue(notesJson.toString(), new TypeReference<List<Note>>(){});
+        List<Note> notes = mapper.readValue(notesJson.toString(), new TypeReference<List<Note>>() {
+        });
 
 
         System.out.println(notes);

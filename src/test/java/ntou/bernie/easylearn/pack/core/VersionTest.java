@@ -1,19 +1,16 @@
 package ntou.bernie.easylearn.pack.core;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import org.hamcrest.core.Is;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by bernie on 2016/2/18.
@@ -31,13 +28,12 @@ public class VersionTest {
         Elements elements = parse.getElementsByClass("note");
 
 
-
         //System.out.println(elements.outerHtml());
         //System.out.println(version);
     }
 
     @Test
-    public void testNoteSync(){
+    public void testNoteSync() {
         String dbContent = "<p>It's the worst of 20 large fires being battled by nine thousand firefighters across the state. A separate <strong><span class=\"note note-orange\" noteid=\"note1439382422748\">blaze</span></strong> that killed a US forest ranger on Thursday near the Oregon border has also expanded, but remains a fraction of the size.</p>\n" +
                 "<p>Some 20,000 acres of <strong><span class=\"note note-purple\" noteid=\"note1439382542987\">shrub</span></strong> oak and birch were <strong>ravaged</strong> by the fire, over a five-hour period on Saturday night. By Sunday evening, the fire had blackened another 7,000 acres along eastern <strong>flanks</strong> of California's northern coast <strong>ranges</strong>.</p>\n";
         String syncContent = "<p>It's the worst of 20 large fires being battled by nine thousand firefighters across the state. A separate <strong><span class=\"note note-orange\" noteid=\"note1439382422748\">blaze</span></strong> that killed a US forest ranger on Thursday near the Oregon border has also expanded, but remains a fraction of the size.</p>\n" +
