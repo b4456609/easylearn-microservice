@@ -45,6 +45,15 @@ public class UserResource {
         this.userDAO = userDAO;
     }
 
+    @GET
+    @Timed
+    @Path("/{id}/folder")
+    public List<Folder> getUserFolder(@QueryParam("id") String userId){
+        if(userId == null)
+            throw  new WebApplicationException(400);
+        return userDAO.getByUserId(userId).getFolder();
+    }
+
 
     @POST
     @Timed

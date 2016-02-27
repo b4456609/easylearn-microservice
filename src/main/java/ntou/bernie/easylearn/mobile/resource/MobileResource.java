@@ -33,39 +33,13 @@ public class MobileResource {
     @POST
     public Response sync(String syncJson) {
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode jsonNode = objectMapper.readTree(syncJson);
-            ObjectNode userNode = (ObjectNode) jsonNode.get("user");
-            userNode.set("folder", jsonNode.get("folder"));
-            // need to implement!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            userNode.putArray("bookmark");
+        LOGGER.debug(syncJson);
+        //sync user
+        UserResource userResource = rc.getResource(UserResource.class);
+        userResource.syncUser(syncJson);
 
-
-
-            //sync user
-            UserResource userResource = rc.getResource(UserResource.class);
-            userResource.syncUser(userNode.toString());
-            LOGGER.debug(userNode.toString());
-
-            PackResource packResource = rc.getResource(PackResource.class);
-            NoteResource noteResource = rc.getResource(NoteResource.class);
-
-            Iterator<String> elements = jsonNode.fieldNames();
-            while (elements.hasNext()) {
-                String packNode = elements.next();
-                LOGGER.debug(packNode);
-                if (packNode.contains("pack")) {
-                    ObjectNode pack = (ObjectNode) jsonNode.get(packNode);
-                    pack.put("id", packNode);
-                    LOGGER.debug(pack.toString());
-                    packResource.syncPack(pack.toString());
-                    noteResource.syncNote(pack.toString());
-                }
-            }
-            return Response.ok().build();
-
-        } catch (IOException e) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
+        PackResource packResource = rc.getResource(PackResource.class);
+        packResource.syncPacks(syncJson);
+        return Response.ok().build();
     }
 }

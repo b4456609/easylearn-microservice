@@ -59,4 +59,9 @@ public class PackDAOImp extends BasicDAO<Pack,ObjectId> implements PackDAO{
     public Pack getPackById(String packId) {
         return findOne("id",packId);
     }
+
+    @Override
+    public List<Pack> getPacksById(List<String> packs) {
+        return createQuery().field("id").in(packs).asList();
+    }
 }
