@@ -1,5 +1,6 @@
 package ntou.bernie.easylearn.user.db;
 
+import ntou.bernie.easylearn.pack.core.Pack;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
@@ -19,5 +20,4 @@ public interface UserDAO extends DAO<User, ObjectId> {
 	public boolean isExist(String userId);
 	public boolean isConflict(User user);
 	public void sync(User user);
-
 }

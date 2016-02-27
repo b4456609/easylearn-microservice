@@ -1,6 +1,6 @@
 appName: Easylearn
 mongoDB:
-  host: 192.168.33.10
+  host: localhost
   port: 27017
 
 # Logging settings.

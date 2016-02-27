@@ -1,5 +1,6 @@
 package ntou.bernie.easylearn.user.db;
 
+import ntou.bernie.easylearn.pack.core.Pack;
 import ntou.bernie.easylearn.user.core.User;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;

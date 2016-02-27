@@ -34,12 +34,41 @@ public class MobileResource {
     public Response sync(String syncJson) {
         ObjectMapper objectMapper = new ObjectMapper();
         LOGGER.debug(syncJson);
+
         //sync user
         UserResource userResource = rc.getResource(UserResource.class);
-        userResource.syncUser(syncJson);
+        Response userResp = userResource.syncUser(syncJson);
+        LOGGER.debug(userResp.toString());
 
+        //sync pack
         PackResource packResource = rc.getResource(PackResource.class);
-        packResource.syncPacks(syncJson);
-        return Response.ok().build();
+        Response packResp = packResource.syncPacks(syncJson);
+        LOGGER.debug(packResp.toString());
+
+        if(userResp.getStatus() != 200 || packResp.getStatus() != 200)
+            return Response.serverError().build();
+
+        String userJson = (String)userResp.getEntity();
+        LOGGER.debug(userJson);
+
+        try {
+            ObjectNode respNode = (ObjectNode)objectMapper.readTree(userJson);
+            String userId = respNode.get("user").get("id").textValue();
+            Response packsResp = packResource.getUserPacks(userId);
+            JsonNode packsNode = objectMapper.readTree((String)packsResp.getEntity());
+
+            for (final JsonNode pack : packsNode) {
+                respNode.set(pack.get("id").asText(), pack);
+            }
+
+            LOGGER.debug(respNode.toString());
+
+            return Response.ok(respNode.toString()).build();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+
     }
 }

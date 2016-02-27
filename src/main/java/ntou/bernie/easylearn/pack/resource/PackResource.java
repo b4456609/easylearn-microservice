@@ -24,8 +24,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import ntou.bernie.easylearn.pack.client.PackNoteClient;
@@ -57,7 +59,8 @@ public class PackResource {
     private final PackNoteClient packNoteClient;
     @Context
     UriInfo uriInfo;
-
+    @Context
+    private ResourceContext rc;
 
     /**
      * @param packDAO
@@ -77,6 +80,30 @@ public class PackResource {
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         this.packUserClient = packUserClient;
         this.packNoteClient = packNoteClient;
+    }
+
+    @GET
+    @Path("/user/{userId}")
+    @Timed
+    public Response getUserPacks(@PathParam("userId") String userId) {
+        if (userId == null)
+            throw new WebApplicationException(404);
+
+        LOGGER.debug(userId);
+        List<String> userPacks = packUserClient.getUserPacks(userId, rc);
+
+        LOGGER.debug(userPacks.toString());
+
+        try {
+            // query from db
+            List<Pack> packs = packDAO.getPacksById(userPacks);
+            LOGGER.debug(packs.toString());
+            String json = objectMapper.writeValueAsString(packs);
+            return Response.ok(json).build();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new WebApplicationException(500);
+        }
     }
 
     @GET
@@ -144,22 +171,15 @@ public class PackResource {
                     // sync pack
                     packDAO.sync(pack);
                     // sync note
-                    packNoteClient.syncNote(packJson);
+                    packNoteClient.syncNote(packJson, rc);
                 }
             }
 
-            //get user's pack
-            String userId = syncJsonNode.get("user").get("id").toString();
-            String folderJson = packUserClient.getUserFolder(userId);
-            List<String> packIds= JsonPath.parse(folderJson).read("$..pack[*]", List.class);
-            List<Pack> packs = packDAO.getPacksById(packIds);
-
             // build response
-            return Response.ok(packs).build();
+            return Response.ok().build();
         } catch (IOException e) {
             LOGGER.info("json pharse problem" + e);
             e.printStackTrace();
-            System.out.println();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }

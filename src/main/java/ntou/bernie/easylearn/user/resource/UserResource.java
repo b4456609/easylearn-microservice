@@ -48,10 +48,24 @@ public class UserResource {
     @GET
     @Timed
     @Path("/{id}/folder")
-    public List<Folder> getUserFolder(@QueryParam("id") String userId){
+    public List<Folder> getUserFolder(@PathParam("id") String userId){
         if(userId == null)
             throw  new WebApplicationException(400);
         return userDAO.getByUserId(userId).getFolder();
+    }
+
+    @GET
+    @Timed
+    @Path("/{id}/pack")
+    public List<String> getUserPack(@PathParam("id") String userId){
+        if(userId == null)
+            throw  new WebApplicationException(400);
+        List<Folder> folders = userDAO.getByUserId(userId).getFolder();
+        List<String> packIds = new ArrayList<>();
+        for(Folder folder : folders){
+            packIds.addAll(folder.getPack());
+        }
+        return packIds;
     }
 
 
@@ -108,25 +122,33 @@ public class UserResource {
                 user.setCreateTime(new DateTime().getMillis());
                 user.setLastUpTime(new DateTime().getMillis());
                 userDAO.save(user);
-                //return user object
-                User userRespnse = userDAO.getByUserId(user.getId());
-                String userResponseJson = objectMapper.writeValueAsString(userRespnse);
-                return Response.ok(userResponseJson, MediaType.APPLICATION_JSON).build();
             }
 
             //check data conflict
-            if (userDAO.isConflict(user)) {
+            else if (userDAO.isConflict(user)) {
                 LOGGER.info("conflict");
                 throw new WebApplicationException(Response.Status.CONFLICT);
             }
+            else{
 
-            LOGGER.info("sync to db");
-            userDAO.sync(user);
-            //return user object
+                LOGGER.info("sync to db");
+                userDAO.sync(user);
+            }
+            //response user json
             LOGGER.info("Build response");
-            User userResponse = userDAO.getByUserId(user.getId());
-            String userResponseJson = objectMapper.writeValueAsString(userResponse);
-            return Response.ok(userResponseJson, MediaType.APPLICATION_JSON).build();
+            User respUser = userDAO.getByUserId(user.getId());
+            ObjectNode userNode = objectMapper.valueToTree(respUser);
+            JsonNode folderNode = userNode.get("folder");
+            userNode.remove("bookmark");
+            userNode.remove("folder");
+
+            ObjectNode respNode = objectMapper.createObjectNode();
+            respNode.set("user", userNode);
+            respNode.set("folder", folderNode);
+
+            String reponseJson = objectMapper.writeValueAsString(respNode);
+            LOGGER.debug(reponseJson);
+            return Response.ok(reponseJson).build();
 
         } catch (IOException e) {
             LOGGER.warn("json error", e);
