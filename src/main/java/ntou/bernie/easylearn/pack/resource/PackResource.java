@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import ntou.bernie.easylearn.pack.client.PackNoteClient;
 import ntou.bernie.easylearn.pack.client.PackUserClient;
+import ntou.bernie.easylearn.pack.core.CustomVersionDeserializer;
 import ntou.bernie.easylearn.pack.core.Pack;
 import ntou.bernie.easylearn.pack.core.Version;
 import ntou.bernie.easylearn.pack.db.PackDAO;
@@ -62,6 +64,8 @@ public class PackResource {
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         this.packUserClient = packUserClient;
         this.packNoteClient = packNoteClient;
+
+
     }
 
     @GET
@@ -136,6 +140,9 @@ public class PackResource {
     @Path("/sync")
     @Timed
     public Response syncPacks(String syncJson) {
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Version.class, new CustomVersionDeserializer());
+        objectMapper.registerModule(module);
         try {
 
             JsonNode syncJsonNode = objectMapper.readTree(syncJson);

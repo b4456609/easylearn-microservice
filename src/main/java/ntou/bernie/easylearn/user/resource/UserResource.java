@@ -125,7 +125,12 @@ public class UserResource {
                 user.setLastUpTime(new DateTime().getMillis());
                 userDAO.save(user);
             }
+            else if (user.getSetting().getVersion() == 0){
+                //old user new login or new device
+                // no need to do anything
+                // direct to build response
 
+            }
             //check data conflict
             else if (userDAO.isConflict(user)) {
                 LOGGER.info("conflict");

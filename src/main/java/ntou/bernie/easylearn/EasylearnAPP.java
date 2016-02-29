@@ -16,8 +16,13 @@ import ntou.bernie.easylearn.pack.resource.PackResource;
 import ntou.bernie.easylearn.user.core.User;
 import ntou.bernie.easylearn.user.db.UserDAOImp;
 import ntou.bernie.easylearn.user.resource.UserResource;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import java.util.EnumSet;
 
 /**
  * @author bernie
@@ -37,6 +42,18 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
     @Override
     public void run(EasylearnAPPConfiguration configuration, Environment environment) throws Exception {
         LOGGER.info("Application name: {}", configuration.getAppName());
+
+        final FilterRegistration.Dynamic cors =
+                environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+
+        // Configure CORS parameters
+        cors.setInitParameter("allowedOrigins", "*");
+        cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+        cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+        // Add URL mapping
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
+
 
         // mongodb driver
         MorphiaService morphia = new MorphiaService(configuration.getDatabaseConfiguration());

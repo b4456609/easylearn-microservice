@@ -1,11 +1,13 @@
 package ntou.bernie.easylearn.pack.core;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 
 @Embedded
@@ -30,12 +32,13 @@ public class Version {
     @NotNull
     private long viewCount;
     @NotNull
-    private String private_id;
+    private String privateId;
     @NotNull
     private String modified;
     @NotNull
     private Set<String> file;
-
+    @NotNull
+    private List<String> noteId;
 
     /**
      *
@@ -43,20 +46,7 @@ public class Version {
     public Version() {
     }
 
-    /**
-     * @param id
-     * @param content
-     * @param createTime
-     * @param isPublic
-     * @param creatorUserId
-     * @param creatorUserName
-     * @param version
-     * @param viewCount
-     * @param private_id
-     * @param file
-     */
-    public Version(String id, String content, String createTime, String isPublic, String creatorUserId,
-                   String creatorUserName, int version, long viewCount, String private_id, Set<String> file) {
+    public Version(String id, String content, String createTime, String isPublic, String creatorUserId, String creatorUserName, int version, long viewCount, String privateId, String modified, Set<String> file, List<String> noteId) {
         this.id = id;
         this.content = content;
         this.createTime = createTime;
@@ -65,8 +55,18 @@ public class Version {
         this.creatorUserName = creatorUserName;
         this.version = version;
         this.viewCount = viewCount;
-        this.private_id = private_id;
+        this.privateId = privateId;
+        this.modified = modified;
         this.file = file;
+        this.noteId = noteId;
+    }
+
+    public List<String> getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(List<String> noteId) {
+        this.noteId = noteId;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Version {
                 ", creatorUserName='" + creatorUserName + '\'' +
                 ", version=" + version +
                 ", viewCount=" + viewCount +
-                ", private_id='" + private_id + '\'' +
+                ", privateId='" + privateId + '\'' +
                 '}';
     }
 
@@ -316,17 +316,17 @@ public class Version {
     }
 
     /**
-     * @return the private_id
+     * @return the privateId
      */
-    public String getPrivate_id() {
-        return private_id;
+    public String getPrivateId() {
+        return privateId;
     }
 
     /**
-     * @param private_id the private_id to set
+     * @param privateId the privateId to set
      */
-    public void setPrivate_id(String private_id) {
-        this.private_id = private_id;
+    public void setPrivateId(String privateId) {
+        this.privateId = privateId;
     }
 
 
