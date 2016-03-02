@@ -1,6 +1,5 @@
 package ntou.bernie.easylearn.pack.core;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Transient;
 import org.slf4j.Logger;
@@ -20,19 +19,19 @@ public class Version {
     @NotNull
     private String content;
     @NotNull
-    private String createTime;
+    private long createTime;
     @NotNull
-    private String isPublic;
+    private boolean isPublic;
     @NotNull
     private String creatorUserId;
     @NotNull
     private String creatorUserName;
     @NotNull
-    private int version;
+    private long version;
     @NotNull
     private long viewCount;
     @NotNull
-    private String privateId;
+    private long privateId;
     @NotNull
     private String modified;
     @NotNull
@@ -46,7 +45,7 @@ public class Version {
     public Version() {
     }
 
-    public Version(String id, String content, String createTime, String isPublic, String creatorUserId, String creatorUserName, int version, long viewCount, String privateId, String modified, Set<String> file, List<String> noteId) {
+    public Version(String id, String content, long createTime, boolean isPublic, String creatorUserId, String creatorUserName, int version, long viewCount, long privateId, String modified, Set<String> file, List<String> noteId) {
         this.id = id;
         this.content = content;
         this.createTime = createTime;
@@ -67,6 +66,44 @@ public class Version {
 
     public void setNoteId(List<String> noteId) {
         this.noteId = noteId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Version version1 = (Version) o;
+
+        if (isPublic != version1.isPublic) return false;
+        if (version != version1.version) return false;
+        if (viewCount != version1.viewCount) return false;
+        if (privateId != version1.privateId) return false;
+        if (!id.equals(version1.id)) return false;
+        if (!content.equals(version1.content)) return false;
+        if (createTime != createTime) return false;
+        if (!creatorUserId.equals(version1.creatorUserId)) return false;
+        if (!creatorUserName.equals(version1.creatorUserName)) return false;
+        if (modified != null ? !modified.equals(version1.modified) : version1.modified != null) return false;
+        if (file != null ? !file.equals(version1.file) : version1.file != null) return false;
+        return noteId != null ? noteId.equals(version1.noteId) : version1.noteId == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + content.hashCode();
+        result = 31 * result + (isPublic ? 1 : 0);
+        result = 31 * result + creatorUserId.hashCode();
+        result = 31 * result + creatorUserName.hashCode();
+        result = 31 * result + (int) (version ^ (version >>> 32));
+        result = 31 * result + (int) (viewCount ^ (viewCount >>> 32));
+        result = 31 * result + (int) (privateId ^ (privateId >>> 32));
+        result = 31 * result + (modified != null ? modified.hashCode() : 0);
+        result = 31 * result + (file != null ? file.hashCode() : 0);
+        result = 31 * result + (noteId != null ? noteId.hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -234,28 +271,28 @@ public class Version {
     /**
      * @return the createTime
      */
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
     /**
      * @param createTime the createTime to set
      */
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
     /**
      * @return the isPublic
      */
-    public String getIsPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
     /**
      * @param isPublic the isPublic to set
      */
-    public void setIsPublic(String isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 
@@ -290,7 +327,7 @@ public class Version {
     /**
      * @return the version
      */
-    public int getVersion() {
+    public long getVersion() {
         return version;
     }
 
@@ -318,14 +355,14 @@ public class Version {
     /**
      * @return the privateId
      */
-    public String getPrivateId() {
+    public long getPrivateId() {
         return privateId;
     }
 
     /**
      * @param privateId the privateId to set
      */
-    public void setPrivateId(String privateId) {
+    public void setPrivateId(long privateId) {
         this.privateId = privateId;
     }
 

@@ -1,16 +1,27 @@
 package ntou.bernie.easylearn.pack.core;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by bernie on 2016/2/18.
@@ -44,5 +55,147 @@ public class VersionTest {
 
         String result = version.syncNote(dbContent);
         assertThat(result, is(syncContent));
+    }
+
+    @Test
+    public void testNoteDeseriliza() throws IOException {
+        String json = "{\n" +
+                "        \"creator_user_id\": \"1009840175700426\",\n" +
+                "        \"note\": [\n" +
+                "          {\n" +
+                "            \"create_time\": 1439381999000,\n" +
+                "            \"user_id\": \"1009840175700426\",\n" +
+                "            \"user_name\": \"范振原\",\n" +
+                "            \"comment\": [],\n" +
+                "            \"id\": \"note1439381999482\",\n" +
+                "            \"content\": \"憤怒的\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"create_time\": 1439382017000,\n" +
+                "            \"user_id\": \"1009840175700426\",\n" +
+                "            \"user_name\": \"范振原\",\n" +
+                "            \"comment\": [\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382017021\",\n" +
+                "                \"create_time\": 1439382101000,\n" +
+                "                \"user_id\": \"1009840175700426\",\n" +
+                "                \"user_name\": \"范振原\",\n" +
+                "                \"id\": \"comment1439382101148\",\n" +
+                "                \"content\": \"好可怕\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382017021\",\n" +
+                "                \"create_time\": 1439382245000,\n" +
+                "                \"user_id\": \"1030089010343091\",\n" +
+                "                \"user_name\": \"Erin Fan\",\n" +
+                "                \"id\": \"comment1439382245078\",\n" +
+                "                \"content\": \"對啊\"\n" +
+                "              }\n" +
+                "            ],\n" +
+                "            \"id\": \"note1439382017021\",\n" +
+                "            \"content\": \"燒焦的\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"create_time\": 1439382427000,\n" +
+                "            \"user_id\": \"1009840175700426\",\n" +
+                "            \"user_name\": \"范振原\",\n" +
+                "            \"comment\": [\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382422748\",\n" +
+                "                \"create_time\": 1439388559000,\n" +
+                "                \"user_id\": \"1030089010343091\",\n" +
+                "                \"user_name\": \"Erin Fan\",\n" +
+                "                \"id\": \"comment1439388559166\",\n" +
+                "                \"content\": \"火焰好大\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382422748\",\n" +
+                "                \"create_time\": 1439388605000,\n" +
+                "                \"user_id\": \"1009840175700426\",\n" +
+                "                \"user_name\": \"范振原\",\n" +
+                "                \"id\": \"comment1439388605368\",\n" +
+                "                \"content\": \"對啊\"\n" +
+                "              }\n" +
+                "            ],\n" +
+                "            \"id\": \"note1439382422748\",\n" +
+                "            \"content\": \"火焰\"\n" +
+                "          },\n" +
+                "          {\n" +
+                "            \"create_time\": 1439382550000,\n" +
+                "            \"user_id\": \"1009840175700426\",\n" +
+                "            \"user_name\": \"范振原\",\n" +
+                "            \"comment\": [\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382542987\",\n" +
+                "                \"create_time\": 1439382577000,\n" +
+                "                \"user_id\": \"1030089010343091\",\n" +
+                "                \"user_name\": \"Erin Fan\",\n" +
+                "                \"id\": \"comment1439382577382\",\n" +
+                "                \"content\": \"這個是灌木嗎\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382542987\",\n" +
+                "                \"create_time\": 1439382608000,\n" +
+                "                \"user_id\": \"1009840175700426\",\n" +
+                "                \"user_name\": \"范振原\",\n" +
+                "                \"id\": \"comment1439382608143\",\n" +
+                "                \"content\": \"是的\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382542987\",\n" +
+                "                \"create_time\": 1439390008000,\n" +
+                "                \"user_id\": \"1030089010343091\",\n" +
+                "                \"user_name\": \"Erin Fan\",\n" +
+                "                \"id\": \"comment1439390008174\",\n" +
+                "                \"content\": \"灌木不是bush嗎\"\n" +
+                "              },\n" +
+                "              {\n" +
+                "                \"note_id\": \"note1439382542987\",\n" +
+                "                \"create_time\": 1439390032000,\n" +
+                "                \"user_id\": \"1009840175700426\",\n" +
+                "                \"user_name\": \"范振原\",\n" +
+                "                \"id\": \"comment1439390032644\",\n" +
+                "                \"content\": \"對阿 這個也是同樣的意思\"\n" +
+                "              }\n" +
+                "            ],\n" +
+                "            \"id\": \"note1439382542987\",\n" +
+                "            \"content\": \"灌木\"\n" +
+                "          }\n" +
+                "        ],\n" +
+                "        \"create_time\": 1439381801000,\n" +
+                "        \"pack_id\": \"pack1439381800612\",\n" +
+                "        \"user_view_count\": 0,\n" +
+                "        \"version\": 0,\n" +
+                "        \"content\": \"content\",\n" +
+                "        \"bookmark\": [],\n" +
+                "        \"file\": [\n" +
+                "          \"AmB1wt8.jpg\"\n" +
+                "        ],\n" +
+                "        \"creator_user_name\": \"范振原\",\n" +
+                "        \"is_public\": true,\n" +
+                "        \"modified\": \"false\",\n" +
+                "        \"private_id\": \"\",\n" +
+                "        \"id\": \"version1439381801259\",\n" +
+                "        \"view_count\": 28\n" +
+                "      }";
+
+
+        ObjectMapper objectMapper;
+        objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Version.class, new CustomVersionDeserializer());
+        objectMapper.registerModule(module);
+
+        Version version = objectMapper.readValue(json,Version.class);
+        ArrayList<String> noteIds = new ArrayList<>();
+        noteIds.add("note1439381999482");
+        noteIds.add("note1439382017021");
+        noteIds.add("note1439382422748");
+        noteIds.add("note1439382542987");
+        Version expect = new Version("version1439381801259", "content", "1439381801000", true, "1009840175700426", "范振原", 0, 28, 0, "false", Collections.singleton("AmB1wt8.jpg"), noteIds);
+
+        assertThat(expect,is(version));
     }
 }

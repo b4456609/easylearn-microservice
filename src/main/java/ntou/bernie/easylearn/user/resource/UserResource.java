@@ -124,8 +124,7 @@ public class UserResource {
                 user.setCreateTime(new DateTime().getMillis());
                 user.setLastUpTime(new DateTime().getMillis());
                 userDAO.save(user);
-            }
-            else if (user.getSetting().getVersion() == 0){
+            } else if (user.getSetting().getVersion() == 0) {
                 //old user new login or new device
                 // no need to do anything
                 // direct to build response
