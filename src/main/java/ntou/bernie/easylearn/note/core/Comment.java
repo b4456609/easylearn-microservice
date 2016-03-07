@@ -5,18 +5,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.mongodb.morphia.annotations.Embedded;
 
+import javax.validation.constraints.NotNull;
+
+
 @Embedded
 public class Comment {
     @NotEmpty
     private String id;
     @NotEmpty
     private String content;
-    @NotEmpty
-    private String createTime;
+    @NotNull
+    private long createTime;
     @NotEmpty
     private String userId;
     @NotEmpty
     private String userName;
+    @NotEmpty
+    private String noteId;
 
     /**
      *
@@ -34,7 +39,7 @@ public class Comment {
      */
     @JsonCreator
     public Comment(@JsonProperty("id") String id, @JsonProperty("content") String content,
-                   @JsonProperty("create_time") String createTime, @JsonProperty("user_id") String userId,
+                   @JsonProperty("create_time") long createTime, @JsonProperty("user_id") String userId,
                    @JsonProperty("user_name") String userName) {
         this.id = id;
         this.content = content;
@@ -74,14 +79,14 @@ public class Comment {
     /**
      * @return the createTime
      */
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
     /**
      * @param createTime the createTime to set
      */
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
@@ -113,4 +118,22 @@ public class Comment {
         this.userName = userName;
     }
 
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                '}';
+    }
+
+    public String getNoteId() {
+        return noteId;
+    }
+
+    public void setNoteId(String noteId) {
+        this.noteId = noteId;
+    }
 }

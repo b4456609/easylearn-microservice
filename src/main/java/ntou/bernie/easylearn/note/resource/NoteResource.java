@@ -50,10 +50,11 @@ public class NoteResource {
     @GET
     @Path("/{versionId}")
     @Timed
-    public Note getNote(@PathParam("versionId") String versionId) {
-        Note note = datastore.createQuery(Note.class).field("versionId").equal(versionId).get();
+    public List<Note> getNote(@PathParam("versionId") String versionId) {
+        List<Note> note = datastore.createQuery(Note.class).field("versionId").equal(versionId).asList();
         if (note == null)
             throw new WebApplicationException(404);
+        LOGGER.debug("getNote " + versionId + note.toString());
         return note;
     }
 
@@ -114,10 +115,10 @@ public class NoteResource {
             LOGGER.debug(notesArray.toString());
             for (Note note : notesArray) {
                 if (isValid(note)) {
-                    LOGGER.debug("Note is valid" + note);
+                    LOGGER.debug("Note is valid " + note);
                     note.sync(datastore);
                 } else {
-                    LOGGER.debug("Note is not valid" + note);
+                    LOGGER.debug("Note is not valid " + note);
                 }
                 //not yet implement
             }

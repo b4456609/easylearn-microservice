@@ -37,7 +37,7 @@ public class Version {
     @NotNull
     private Set<String> file;
     @NotNull
-    private List<String> noteId;
+    private List<String> note;
 
     /**
      *
@@ -45,7 +45,7 @@ public class Version {
     public Version() {
     }
 
-    public Version(String id, String content, long createTime, boolean isPublic, String creatorUserId, String creatorUserName, int version, long viewCount, long privateId, String modified, Set<String> file, List<String> noteId) {
+    public Version(String id, String content, long createTime, boolean isPublic, String creatorUserId, String creatorUserName, int version, long viewCount, long privateId, String modified, Set<String> file, List<String> note) {
         this.id = id;
         this.content = content;
         this.createTime = createTime;
@@ -57,15 +57,15 @@ public class Version {
         this.privateId = privateId;
         this.modified = modified;
         this.file = file;
-        this.noteId = noteId;
+        this.note = note;
     }
 
-    public List<String> getNoteId() {
-        return noteId;
+    public List<String> getNote() {
+        return note;
     }
 
-    public void setNoteId(List<String> noteId) {
-        this.noteId = noteId;
+    public void setNote(List<String> note) {
+        this.note = note;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class Version {
         if (!creatorUserName.equals(version1.creatorUserName)) return false;
         if (modified != null ? !modified.equals(version1.modified) : version1.modified != null) return false;
         if (file != null ? !file.equals(version1.file) : version1.file != null) return false;
-        return noteId != null ? noteId.equals(version1.noteId) : version1.noteId == null;
+        return note != null ? note.equals(version1.note) : version1.note == null;
 
     }
 
@@ -102,7 +102,7 @@ public class Version {
         result = 31 * result + (int) (privateId ^ (privateId >>> 32));
         result = 31 * result + (modified != null ? modified.hashCode() : 0);
         result = 31 * result + (file != null ? file.hashCode() : 0);
-        result = 31 * result + (noteId != null ? noteId.hashCode() : 0);
+        result = 31 * result + (note != null ? note.hashCode() : 0);
         return result;
     }
 
@@ -190,13 +190,13 @@ public class Version {
         Elements dbnotes = dbparse.getElementsByClass("note");
 
 
-        Set<String> noteId = new HashSet<String>();
+        Set<String> note = new HashSet<String>();
         Set<String> dbNoteId = new HashSet<String>();
 
 
         for (Element element : notes) {
             Attributes attributes = element.attributes();
-            noteId.add(attributes.get("noteid"));
+            note.add(attributes.get("noteid"));
         }
 
         for (Element element : dbnotes) {
@@ -206,12 +206,12 @@ public class Version {
         }
 
 
-        LOGGER.debug(noteId.toString());
+        LOGGER.debug(note.toString());
         LOGGER.debug(dbNoteId.toString());
 
         Set<String> dbNoteIdAdd = new HashSet<String>();
         dbNoteIdAdd.addAll(dbNoteId);
-        dbNoteIdAdd.addAll(noteId);
+        dbNoteIdAdd.addAll(note);
         dbNoteIdAdd.removeAll(dbNoteId);
 
         //no need to add note

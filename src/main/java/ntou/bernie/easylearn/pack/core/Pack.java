@@ -20,11 +20,11 @@ public class Pack {
     @NotNull
     private String description;
     @NotNull
-    private String createTime;
+    private long createTime;
     @NotNull
     private String tags;
     @NotNull
-    private String isPublic;
+    private boolean isPublic;
     @NotNull
     private String creatorUserId;
     @NotNull
@@ -56,7 +56,7 @@ public class Pack {
      * @param version
      * @param file
      */
-    public Pack(String name, String id, String description, String createTime, String tags, String isPublic,
+    public Pack(String name, String id, String description, long createTime, String tags, boolean isPublic,
                 String creatorUserId, String creatorUserName, String coverFilename, List<Version> version,
                 Set<String> file) {
         this.name = name;
@@ -134,14 +134,14 @@ public class Pack {
     /**
      * @return the createTime
      */
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
     /**
      * @param createTime the createTime to set
      */
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
@@ -162,14 +162,14 @@ public class Pack {
     /**
      * @return the isPublic
      */
-    public String getIsPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
     /**
      * @param isPublic the isPublic to set
      */
-    public void setIsPublic(String isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 
@@ -201,21 +201,7 @@ public class Pack {
         this.creatorUserName = creatorUserName;
     }
 
-    /**
-     * @return the coverFileName
-     */
-    public String getCoverFileName() {
-        return coverFilename;
-    }
-
-    /**
-     * @param coverFileName the coverFileName to set
-     */
-    public void setCoverFileName(String coverFileName) {
-        this.coverFilename = coverFileName;
-    }
-
-    /**
+        /**
      * @return the version
      */
     public List<Version> getVersion() {

@@ -12,7 +12,7 @@ logging:
     - type: console
     - type: file
       threshold: DEBUG
-      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
+     # logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
       currentLogFilename: ./log/application.log
       archivedLogFilenamePattern: ./log/application-%d{yyyy-MM-dd}-%i.log.gz
       archivedFileCount: 7

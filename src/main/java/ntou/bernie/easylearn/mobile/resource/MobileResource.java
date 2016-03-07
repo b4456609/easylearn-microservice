@@ -32,21 +32,23 @@ public class MobileResource {
     @POST
     public Response sync(String syncJson) {
         ObjectMapper objectMapper = new ObjectMapper();
-        LOGGER.debug(syncJson);
+        LOGGER.debug("sync Json content " + syncJson);
 
         //sync user
         UserResource userResource = rc.getResource(UserResource.class);
         Response userResp = userResource.syncUser(syncJson);
-        LOGGER.debug(userResp.toString());
+        LOGGER.debug("Finish user sync " + userResp.toString());
 
         //sync pack
         PackResource packResource = rc.getResource(PackResource.class);
         Response packResp = packResource.syncPacks(syncJson);
-        LOGGER.debug(packResp.toString());
+        LOGGER.debug("Finish pack sync " + packResp.toString());
 
+        //if sync not ok return server error
         if (userResp.getStatus() != 200 || packResp.getStatus() != 200)
             return Response.serverError().build();
 
+        //get response user json node
         String userJson = (String) userResp.getEntity();
         LOGGER.debug(userJson);
 

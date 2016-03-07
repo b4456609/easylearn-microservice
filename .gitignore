@@ -1,5 +1,10 @@
+ansible.cfg
+deploy.sh
+easylearn-ms/
+hosts
+web.retry
+web.yml
 
-# Created by https://www.gitignore.io/api/linux,gradle,eclipse,intellij,java
 
 ### Linux ###
 *~

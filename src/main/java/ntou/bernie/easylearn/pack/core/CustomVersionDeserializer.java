@@ -1,6 +1,5 @@
 package ntou.bernie.easylearn.pack.core;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
@@ -29,8 +28,9 @@ public class CustomVersionDeserializer extends JsonDeserializer<Version> {
         ObjectMapper objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+        ((ObjectNode)node).remove("note");
         Version version = objectMapper.readValue(node.toString(),Version.class);
-        version.setNoteId(notesId);
+        version.setNote(notesId);
         LOGGER.debug(version.toString());
         return version;
     }

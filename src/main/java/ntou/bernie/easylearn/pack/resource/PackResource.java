@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ntou.bernie.easylearn.pack.client.PackNoteClient;
 import ntou.bernie.easylearn.pack.client.PackUserClient;
 import ntou.bernie.easylearn.pack.core.CustomVersionDeserializer;
@@ -83,13 +85,41 @@ public class PackResource {
         try {
             // query from db
             List<Pack> packs = packDAO.getPacksById(userPacks);
-            LOGGER.debug(packs.toString());
-            String json = objectMapper.writeValueAsString(packs);
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            for (Pack pack : packs) {
+                //read pack to json node
+                final ObjectNode packNode = objectMapper.valueToTree(pack);
+                //get version array node
+                final ArrayNode versionsNode = (ArrayNode) packNode.get("version");
+                LOGGER.debug("versionsNode " + versionsNode.toString());
+                //iterate each version
+                versionsNode.forEach(versionNode -> {
+                    try {
+                        String versionId = versionNode.get("id").asText();
+                        JsonNode noteJson = packNoteClient.getNoteByVersionId(versionId, rc);
+                        LOGGER.debug("pack's notes " +noteJson.toString());
+                        ((ObjectNode) versionNode).set("note", noteJson);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    /*try {
+                        JsonNode note = versionNode.get("note");
+                        final String notesJson = packNoteClient.getNoteByIds(note.asText());
+                        final JsonNode notesNode = objectMapper.readTree(notesJson);
+                        ((ObjectNode) versionNode).set("note", notesNode);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }*/
+                });
+                arrayNode.add(packNode);
+            }
+            LOGGER.debug(arrayNode.toString());
+            String json = objectMapper.writeValueAsString(arrayNode);
             return Response.ok(json).build();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new WebApplicationException(500);
+        } catch (JsonProcessingException e1) {
+            e1.printStackTrace();
         }
+        return Response.serverError().build();
     }
 
     @GET
@@ -167,7 +197,7 @@ public class PackResource {
             // build response
             return Response.ok().build();
         } catch (IOException e) {
-            LOGGER.info("json pharse problem" + e);
+            LOGGER.info("json pharse problem " + e);
             e.printStackTrace();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }

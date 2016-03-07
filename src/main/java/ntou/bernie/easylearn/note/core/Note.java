@@ -26,8 +26,8 @@ public class Note {
     private String id;
     @NotEmpty
     private String content;
-    @NotEmpty
-    private String createTime;
+    @NotNull
+    private long createTime;
     @NotEmpty
     private String userId;
     @NotEmpty
@@ -56,7 +56,7 @@ public class Note {
      */
     @JsonCreator
     public Note(@JsonProperty("id") String id, @JsonProperty("content") String content,
-                @JsonProperty("create_time") String createTime, @JsonProperty("user_id") String userId,
+                @JsonProperty("create_time") long createTime, @JsonProperty("user_id") String userId,
                 @JsonProperty("user_name") String userName, @JsonProperty("version_id") String versionId,
                 @JsonProperty("comment") List<Comment> comment) {
         this.id = id;
@@ -99,14 +99,14 @@ public class Note {
     /**
      * @return the createTime
      */
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
     /**
      * @param createTime the createTime to set
      */
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
