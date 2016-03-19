@@ -1,5 +1,3 @@
-# this is an example of the Uber API
-# as a demonstration of an API spec in YAML
 swagger: '2.0'
 info:
   title: Easylearn API
@@ -88,6 +86,10 @@ paths:
                 $ref: '#/definitions/Setting'
               folder:
                 $ref: '#/definitions/Folder'
+        409:
+          description: Sync conflict
+        400:
+          description: Json validation not pass
   /user/{id}/pack:
     get:
       summary: User's pack
@@ -111,6 +113,8 @@ paths:
             items:
               type: string
               description: pack id
+        400:
+          description: id validation not pass
   /user/{id}/sync:
     post:
       summary: sync user setting

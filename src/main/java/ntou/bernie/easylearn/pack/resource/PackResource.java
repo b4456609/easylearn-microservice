@@ -11,9 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ntou.bernie.easylearn.pack.client.PackNoteClient;
 import ntou.bernie.easylearn.pack.client.PackUserClient;
-import ntou.bernie.easylearn.pack.core.CustomVersionDeserializer;
-import ntou.bernie.easylearn.pack.core.Pack;
-import ntou.bernie.easylearn.pack.core.Version;
+import ntou.bernie.easylearn.pack.core.*;
 import ntou.bernie.easylearn.pack.db.PackDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +72,7 @@ public class PackResource {
     @Timed
     public Response getUserPacks(@PathParam("userId") String userId) {
         if (userId == null)
-            throw new WebApplicationException(404);
+            throw new WebApplicationException(400);
 
         LOGGER.debug(userId);
         List<String> userPacks = packUserClient.getUserPacks(userId, rc);
@@ -92,24 +89,19 @@ public class PackResource {
                 //get version array node
                 final ArrayNode versionsNode = (ArrayNode) packNode.get("version");
                 LOGGER.debug("versionsNode " + versionsNode.toString());
-                //iterate each version
+                //iterate each version to get note
                 versionsNode.forEach(versionNode -> {
                     try {
                         String versionId = versionNode.get("id").asText();
                         JsonNode noteJson = packNoteClient.getNoteByVersionId(versionId, rc);
                         LOGGER.debug("pack's notes " + noteJson.toString());
                         ((ObjectNode) versionNode).set("note", noteJson);
+
+                        //add bookmark
+                        ((ObjectNode) versionNode).putArray("bookmark");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    /*try {
-                        JsonNode note = versionNode.get("note");
-                        final String notesJson = packNoteClient.getNoteByIds(note.asText());
-                        final JsonNode notesNode = objectMapper.readTree(notesJson);
-                        ((ObjectNode) versionNode).set("note", notesNode);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }*/
                 });
                 arrayNode.add(packNode);
             }

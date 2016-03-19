@@ -14,7 +14,5 @@ public interface PackDAO extends DAO<Pack, ObjectId> {
 
     void sync(Pack pack);
 
-    Pack getPackById(String packId);
-
     List<Pack> getPacksById(List<String> packs);
 }

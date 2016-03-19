@@ -1,5 +1,6 @@
 package ntou.bernie.easylearn.pack.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Transient;
 import org.slf4j.Logger;
@@ -31,7 +32,10 @@ public class Version {
     @NotNull
     private long viewCount;
     @NotNull
-    private long privateId;
+    @Transient
+    private long userViewCount;
+    @NotNull
+    private String privateId;
     @NotNull
     private String modified;
     @NotNull
@@ -45,7 +49,7 @@ public class Version {
     public Version() {
     }
 
-    public Version(String id, String content, long createTime, boolean isPublic, String creatorUserId, String creatorUserName, int version, long viewCount, long privateId, String modified, Set<String> file, List<String> note) {
+    public Version(String id, String content, long createTime, boolean isPublic, String creatorUserId, String creatorUserName, long version, long viewCount, long userViewCount, String privateId, String modified, Set<String> file, List<String> note) {
         this.id = id;
         this.content = content;
         this.createTime = createTime;
@@ -54,74 +58,17 @@ public class Version {
         this.creatorUserName = creatorUserName;
         this.version = version;
         this.viewCount = viewCount;
+        this.userViewCount = userViewCount;
         this.privateId = privateId;
         this.modified = modified;
         this.file = file;
         this.note = note;
     }
 
-    public List<String> getNote() {
-        return note;
-    }
-
-    public void setNote(List<String> note) {
-        this.note = note;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Version version1 = (Version) o;
-
-        if (isPublic != version1.isPublic) return false;
-        if (version != version1.version) return false;
-        if (viewCount != version1.viewCount) return false;
-        if (privateId != version1.privateId) return false;
-        if (!id.equals(version1.id)) return false;
-        if (!content.equals(version1.content)) return false;
-        if (createTime != createTime) return false;
-        if (!creatorUserId.equals(version1.creatorUserId)) return false;
-        if (!creatorUserName.equals(version1.creatorUserName)) return false;
-        if (modified != null ? !modified.equals(version1.modified) : version1.modified != null) return false;
-        if (file != null ? !file.equals(version1.file) : version1.file != null) return false;
-        return note != null ? note.equals(version1.note) : version1.note == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + content.hashCode();
-        result = 31 * result + (isPublic ? 1 : 0);
-        result = 31 * result + creatorUserId.hashCode();
-        result = 31 * result + creatorUserName.hashCode();
-        result = 31 * result + (int) (version ^ (version >>> 32));
-        result = 31 * result + (int) (viewCount ^ (viewCount >>> 32));
-        result = 31 * result + (int) (privateId ^ (privateId >>> 32));
-        result = 31 * result + (modified != null ? modified.hashCode() : 0);
-        result = 31 * result + (file != null ? file.hashCode() : 0);
-        result = 31 * result + (note != null ? note.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Version{" +
-                "id='" + id + '\'' +
-                ", content='" + content + '\'' +
-                ", createTime='" + createTime + '\'' +
-                ", isPublic='" + isPublic + '\'' +
-                ", creatorUserId='" + creatorUserId + '\'' +
-                ", creatorUserName='" + creatorUserName + '\'' +
-                ", version=" + version +
-                ", viewCount=" + viewCount +
-                ", privateId='" + privateId + '\'' +
-                '}';
-    }
-
     public void sync(Version dbVersion) {
+        //update view count
+        viewCount += userViewCount;
+        userViewCount = 0;
         this.content = syncNote(dbVersion.content);
     }
 
@@ -247,125 +194,82 @@ public class Version {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * @return the content
-     */
     public String getContent() {
         return content;
     }
 
-    /**
-     * @param content the content to set
-     */
     public void setContent(String content) {
         this.content = content;
     }
 
-    /**
-     * @return the createTime
-     */
     public long getCreateTime() {
         return createTime;
     }
 
-    /**
-     * @param createTime the createTime to set
-     */
     public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
-    /**
-     * @return the isPublic
-     */
-    public boolean getIsPublic() {
+    @JsonProperty("is_public")
+    public boolean isPublic() {
         return isPublic;
     }
 
-    /**
-     * @param isPublic the isPublic to set
-     */
-    public void setIsPublic(boolean isPublic) {
+    public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 
-    /**
-     * @return the creatorUserId
-     */
     public String getCreatorUserId() {
         return creatorUserId;
     }
 
-    /**
-     * @param creatorUserId the creatorUserId to set
-     */
     public void setCreatorUserId(String creatorUserId) {
         this.creatorUserId = creatorUserId;
     }
 
-    /**
-     * @return the creatorUserName
-     */
     public String getCreatorUserName() {
         return creatorUserName;
     }
 
-    /**
-     * @param creatorUserName the creatorUserName to set
-     */
     public void setCreatorUserName(String creatorUserName) {
         this.creatorUserName = creatorUserName;
     }
 
-    /**
-     * @return the version
-     */
     public long getVersion() {
         return version;
     }
 
-    /**
-     * @param version the version to set
-     */
-    public void setVersion(int version) {
+    public void setVersion(long version) {
         this.version = version;
     }
 
-    /**
-     * @return the viewCount
-     */
     public long getViewCount() {
         return viewCount;
     }
 
-    /**
-     * @param viewCount the viewCount to set
-     */
     public void setViewCount(long viewCount) {
         this.viewCount = viewCount;
     }
 
-    /**
-     * @return the privateId
-     */
-    public long getPrivateId() {
+    public long getUserViewCount() {
+        return userViewCount;
+    }
+
+    public void setUserViewCount(long userViewCount) {
+        this.userViewCount = userViewCount;
+    }
+
+    public String getPrivateId() {
         return privateId;
     }
 
-    /**
-     * @param privateId the privateId to set
-     */
-    public void setPrivateId(long privateId) {
+    public void setPrivateId(String privateId) {
         this.privateId = privateId;
     }
-
 
     public String getModified() {
         return modified;
@@ -381,5 +285,13 @@ public class Version {
 
     public void setFile(Set<String> file) {
         this.file = file;
+    }
+
+    public List<String> getNote() {
+        return note;
+    }
+
+    public void setNote(List<String> note) {
+        this.note = note;
     }
 }

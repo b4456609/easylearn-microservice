@@ -30,7 +30,7 @@ public class PackDAOImp extends BasicDAO<Pack, ObjectId> implements PackDAO {
             return;
         }
 
-        Pack dbPack = getPackById(pack.getId());
+        Pack dbPack = findOne("id", pack.getId());
 
         //delete or sync
         List<Version> versions = pack.getVersion();
@@ -53,11 +53,6 @@ public class PackDAOImp extends BasicDAO<Pack, ObjectId> implements PackDAO {
                 .set("isPublic", pack.getIsPublic())
                 .set("version", pack.getVersion());
         update(createQuery().field("id").equal(pack.getId()), updateOp);
-    }
-
-    @Override
-    public Pack getPackById(String packId) {
-        return findOne("id", packId);
     }
 
     @Override

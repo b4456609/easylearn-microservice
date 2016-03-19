@@ -31,8 +31,6 @@ public class Pack {
     private String creatorUserName;
     @NotNull
     private String coverFilename;
-
-
     @NotNull
     @Embedded
     private List<Version> version;
