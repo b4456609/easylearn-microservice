@@ -21,7 +21,7 @@ public class PackUserClient {
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
     }
 
-    public String getUserFolder(String userId, ResourceContext rc) {
+ /*   public String getUserFolder(String userId, ResourceContext rc) {
         UserResource userResource = rc.getResource(UserResource.class);
         try {
             return objectMapper.writeValueAsString(userResource.getUserFolder(userId));
@@ -29,7 +29,7 @@ public class PackUserClient {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
     public List<String> getUserPacks(String userId, ResourceContext rc) {
         UserResource userResource = rc.getResource(UserResource.class);

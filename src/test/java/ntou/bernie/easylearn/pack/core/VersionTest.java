@@ -51,7 +51,7 @@ public class VersionTest {
         assertThat(result, is(syncContent));
     }
 
-    @Test
+   /* @Test
     public void testNoteDeseriliza() throws IOException {
         String json = "{\n" +
                 "        \"creator_user_id\": \"1009840175700426\",\n" +
@@ -191,5 +191,5 @@ public class VersionTest {
         Version expect = new Version("version1439381801259", "content", "1439381801000", true, "1009840175700426", "范振原", 0, 28, 0, "false", Collections.singleton("AmB1wt8.jpg"), noteIds);
 
         assertThat(expect,is(version));
-    }
+    }*/
 }

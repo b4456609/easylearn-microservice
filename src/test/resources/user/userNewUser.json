@@ -1,0 +1,20 @@
+{
+  "user": {
+    "id": "1009840175700426",
+    "name": "范振原"
+  },
+  "folder": [
+    {
+      "name": "全部的懶人包",
+      "id": "allfolder",
+      "pack": []
+    }
+  ],
+  "setting": {
+    "wifi_sync": true,
+    "mobile_network_sync": true,
+    "last_sync_time": 1455851572000,
+    "modified": false,
+    "version": 0
+  }
+}
