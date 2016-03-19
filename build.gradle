@@ -3,8 +3,6 @@ plugins {
   id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-
 
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -41,7 +39,7 @@ shadowJar {
     manifest {
         attributes("Implementation-Title": "Easylearn", "Implementation-Version": version)
     }
-    transform(ServiceFileTransformer)
+    mergeServiceFiles()
 }
 
 

@@ -1,0 +1,380 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Easylearn API
+  description: Easylearn api
+  version: "1.0.0"
+# the domain of the service
+host: easylearn.noip.me
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /sync:
+    post:
+      summary: sync mobile and website data
+      description:
+        sync user setting, including user name, folder, setting
+      produces:
+      - application/json
+      parameters:
+        - name: data
+          in: body
+          description: all application data
+          required: true
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              setting:
+                $ref: '#/definitions/Setting'
+              folder:
+                $ref: '#/definitions/Folder'
+              pack:
+                type: array
+                items:
+                  $ref: '#/definitions/Pack'
+
+      tags:
+        - User
+        - Pack
+        - Note
+      responses:
+        200:
+          description: Return use's information
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              setting:
+                $ref: '#/definitions/Setting'
+              folder:
+                $ref: '#/definitions/Folder'
+              pack:
+                type: array
+                items:
+                  $ref: '#/definitions/Pack'
+  /user/{id}:
+    get:
+      summary: User information
+      description:
+        Get user's all information
+      produces:
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User facebook's id.
+          required: true
+          type: string
+      tags:
+        - User
+      responses:
+        200:
+          description: Return user's folder, bookmark, setting.
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              setting:
+                $ref: '#/definitions/Setting'
+              folder:
+                $ref: '#/definitions/Folder'
+  /user/{id}/pack:
+    get:
+      summary: User's pack
+      description:
+        Get user's all pack id
+      produces:
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User facebook's id.
+          required: true
+          type: string
+      tags:
+        - Pack
+      responses:
+        200:
+          description: Return user owned pack
+          schema:
+            type: array
+            items:
+              type: string
+              description: pack id
+  /user/{id}/sync:
+    post:
+      summary: sync user setting
+      description:
+        sync user setting, including user name, folder, setting
+      produces:
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          description: User facebook's id.
+          required: true
+          type: string
+        - name: user info
+          in: body
+          description: user information object
+          required: true
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              setting:
+                $ref: '#/definitions/Setting'
+              folder:
+                $ref: '#/definitions/Folder'
+      tags:
+        - User
+      responses:
+        200:
+          description: Return use's information
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/definitions/User'
+              setting:
+                $ref: '#/definitions/Setting'
+              folder:
+                $ref: '#/definitions/Folder'
+  /pack/user/{userid}:
+    get:
+      summary: Get user's all packs
+      description: |
+        Get all user's pack in array.
+      parameters:
+        - name: userid
+          in: path
+          description: User facebook's id.
+          required: true
+          type: string
+      tags:
+        - Pack
+      responses:
+        200:
+          description: An array of packs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Pack'
+  /pack/sync:
+    post:
+      summary: Sync packs with database
+      description: |
+        Sync packs with database
+      parameters:
+        - name: pack
+          in: body
+          description: pack to sync
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Pack'
+      tags:
+        - Pack
+      responses:
+        200:
+          description: An array of packs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Pack'
+  /note/sync:
+    post:
+      summary: Sync notes with database
+      description: |
+        Sync packs' note with database
+      parameters:
+        - name: pack
+          in: body
+          description: pack to sync
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Pack'
+      tags:
+        - Note
+      responses:
+        200:
+          description: success sync
+  /note/{versionId}:
+    get:
+      summary: Get all notes in version
+      description: |
+        Use version id to identify which note is in that version.
+      parameters:
+        - name: versionId
+          in: path
+          description: version's id.
+          required: true
+          type: string
+      tags:
+        - Note
+      responses:
+        200:
+          description: An array of packs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Pack'
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+        description: user's facebook id
+      name:
+        type: string
+        description: user's facebook name
+  Setting:
+    type: object
+    properties:
+      wifi_sync:
+        type: boolean
+        description: whether use wifi to sync
+      mobile_network_sync:
+        type: boolean
+        description: whether use mobile network to sync
+      last_sync_time:
+        type: integer
+        format: long
+        description: last sync time in long format
+      modified:
+        type: boolean
+        description: Indicate this version has been modified
+      version:
+        type: integer
+        format: long
+        description: The setting version user has
+  Folder:
+    type: array
+    description: folder that user has
+    items:
+      $ref: '#/definitions/FolderItem'
+  FolderItem:
+    type: object
+    description: User's folder item
+    properties:
+      name:
+        type: string
+        description: Folder name
+      id:
+        type: string
+        description: Folder id
+      pack:
+        type: array
+        items:
+          type: string
+          description: Pack's id in this folder
+  Pack:
+    type: object
+    description: pack
+    properties:
+      id:
+        type: string
+      creator_user_id:
+        type: string
+      cover_filename:
+        type: string
+      create_time:
+        type: integer
+      creator_user_name:
+        type: string
+      name:
+        type: string
+      is_public:
+        type: boolean
+      description:
+        type: string
+      tags:
+        type: string
+      version:
+        type: array
+        items:
+          $ref: '#/definitions/Version'
+  Version:
+    type: object
+    properties:
+      creator_user_id:
+        type: string
+      create_time:
+        type: integer
+      pack_id:
+        type: string
+      user_view_count:
+        type: integer
+      version:
+        type: integer
+      content:
+        type: string
+      bookmark:
+        type: array
+        items: {}
+      file:
+        type: array
+        items:
+          type: string
+      creator_user_name:
+        type: string
+      is_public:
+        type: boolean
+      modified:
+        type: string
+      private_id:
+        type: string
+      id:
+        type: string
+      view_count:
+        type: integer
+      note:
+        type: array
+        items:
+          $ref: '#/definitions/Note'
+  Note:
+    type: object
+    properties:
+      id:
+        type: string
+      create_time:
+        type: integer
+      user_id:
+        type: string
+      user_name:
+        type: string
+      content:
+        type: string
+      comment:
+        type: array
+        items:
+          type: object
+          properties:
+            note_id:
+              type: string
+            create_time:
+              type: integer
+            user_id:
+              type: string
+            user_name:
+              type: string
+            id:
+              type: string
+            content:
+              type: string

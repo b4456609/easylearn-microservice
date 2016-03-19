@@ -3,6 +3,7 @@
  */
 package ntou.bernie.easylearn;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import ntou.bernie.easylearn.db.MorphiaService;
@@ -42,6 +43,7 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
     @Override
     public void run(EasylearnAPPConfiguration configuration, Environment environment) throws Exception {
         LOGGER.info("Application name: {}", configuration.getAppName());
+        environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         final FilterRegistration.Dynamic cors =
                 environment.servlets().addFilter("CORS", CrossOriginFilter.class);

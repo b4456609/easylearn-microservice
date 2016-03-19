@@ -20,11 +20,9 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import javax.validation.*;
 import javax.ws.rs.*;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -68,6 +66,12 @@ public class UserResource {
             packIds.addAll(folder.getPack());
         }
         return packIds;
+    }
+
+    @POST
+    @Timed
+    public User addUser(@Valid User user) {
+        return user;
     }
 
 

@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by bernie on 2016/2/26.
