@@ -10,7 +10,7 @@ import ntou.bernie.easylearn.user.core.User;
  * Created by bernie on 2016/3/19.
  */
 public class UserSerializer {
-    public static String userSerilizer(User user,ObjectMapper objectMapper) throws JsonProcessingException{
+    public static String userSerilizer(User user, ObjectMapper objectMapper) throws JsonProcessingException {
         ObjectNode userNode = objectMapper.valueToTree(user);
         JsonNode folderNode = userNode.get("folder");
         JsonNode settingNode = userNode.get("setting");

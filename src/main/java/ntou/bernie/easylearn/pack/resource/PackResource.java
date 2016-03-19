@@ -2,6 +2,7 @@ package ntou.bernie.easylearn.pack.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +12,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ntou.bernie.easylearn.pack.client.PackNoteClient;
 import ntou.bernie.easylearn.pack.client.PackUserClient;
-import ntou.bernie.easylearn.pack.core.*;
+import ntou.bernie.easylearn.pack.core.CustomVersionDeserializer;
+import ntou.bernie.easylearn.pack.core.Pack;
+import ntou.bernie.easylearn.pack.core.Version;
 import ntou.bernie.easylearn.pack.db.PackDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Path("/pack")
@@ -63,8 +64,6 @@ public class PackResource {
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
         this.packUserClient = packUserClient;
         this.packNoteClient = packNoteClient;
-
-
     }
 
     @GET
@@ -123,23 +122,15 @@ public class PackResource {
         objectMapper.registerModule(module);
         try {
 
-            JsonNode syncJsonNode = objectMapper.readTree(syncJson);
-            Iterator<Map.Entry<String, JsonNode>> fields = syncJsonNode.fields();
-            while (fields.hasNext()) {
-                Map.Entry<String, JsonNode> item = fields.next();
-                if (item.getKey().contains("pack")) {
-                    String packJson = item.getValue().toString();
-                    // map to comment object
-                    Pack pack = objectMapper.readValue(packJson, Pack.class);
-                    pack.setId(item.getKey());
-                    // pack json validation
-                    packValidation(pack);
+            // map to comment object
+            List<Pack> packs = objectMapper.readValue(syncJson, new TypeReference<List<Pack>>() {
+            });
 
-                    // sync pack
-                    packDAO.sync(pack);
-                    // sync note
-                    packNoteClient.syncNote(packJson, rc);
-                }
+            // pack json validation
+            for (Pack pack : packs) {
+                packValidation(pack);
+                // sync pack
+                packDAO.sync(pack);
             }
 
             // build response

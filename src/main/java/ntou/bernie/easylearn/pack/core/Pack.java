@@ -199,7 +199,7 @@ public class Pack {
         this.creatorUserName = creatorUserName;
     }
 
-        /**
+    /**
      * @return the version
      */
     public List<Version> getVersion() {

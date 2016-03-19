@@ -18,6 +18,7 @@ import java.util.List;
 public class CustomVersionDeserializer extends JsonDeserializer<Version> {
     @Transient
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomVersionDeserializer.class);
+
     @Override
     public Version deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = p.getCodec().readTree(p);
@@ -28,8 +29,8 @@ public class CustomVersionDeserializer extends JsonDeserializer<Version> {
         ObjectMapper objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-        ((ObjectNode)node).remove("note");
-        Version version = objectMapper.readValue(node.toString(),Version.class);
+        ((ObjectNode) node).remove("note");
+        Version version = objectMapper.readValue(node.toString(), Version.class);
         version.setNote(notesId);
         LOGGER.debug(version.toString());
         return version;

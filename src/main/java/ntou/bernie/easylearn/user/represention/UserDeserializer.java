@@ -22,14 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by bernie on 2016/3/19.
  */
 public class UserDeserializer {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDeserializer.class);
-    public static User userDeserilizer(String userJson, ObjectMapper objectMapper) throws IOException{
+
+    public static User userDeserilizer(String userJson, ObjectMapper objectMapper) throws IOException {
 
         JsonNode jsonNode = objectMapper.readTree(userJson);
 

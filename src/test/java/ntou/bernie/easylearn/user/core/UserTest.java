@@ -1,7 +1,5 @@
 package ntou.bernie.easylearn.user.core;
 
-import org.junit.Test;
-
 public class UserTest {
 
 /*    @Test
