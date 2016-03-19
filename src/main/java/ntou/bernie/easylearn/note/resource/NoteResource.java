@@ -58,7 +58,7 @@ public class NoteResource {
         return note;
     }
 
-    @POST
+/*    @POST
     @Timed
     public Response addNote(String noteJson) {
         try {
@@ -78,7 +78,7 @@ public class NoteResource {
             LOGGER.warn("DuplicateKeyException", e);
             return Response.status(Response.Status.CONFLICT).build();
         }
-    }
+    }*/
 
     @POST
     @Path("/sync")

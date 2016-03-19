@@ -53,18 +53,14 @@ public class User {
     /**
      * @param id
      * @param name
-     * @param createTime
-     * @param lastUpTime
      * @param setting
      * @param folder
      * @param bookmark
      */
-    public User(String id, String name, long createTime, long lastUpTime, Setting setting, List<Folder> folder,
+    public User(String id, String name, Setting setting, List<Folder> folder,
                 List<Bookmark> bookmark) {
         this.id = id;
         this.name = name;
-        this.createTime = createTime;
-        this.lastUpTime = lastUpTime;
         this.setting = setting;
         this.folder = folder;
         this.bookmark = bookmark;
@@ -78,7 +74,7 @@ public class User {
     }
 
     /**
-     * @param userId the userId to set
+     * @param id the userId to set
      */
     public void setId(String id) {
         this.id = id;

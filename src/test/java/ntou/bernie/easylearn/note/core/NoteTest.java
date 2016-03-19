@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 public class NoteTest {
 
-    @Test
+/*    @Test
     public void testNoteStyle() throws JsonProcessingException {
         List<Comment> comment = new ArrayList<Comment>();
         comment.add(new Comment("id", "content", "create_timej", "fasdfID", "name"));
@@ -27,7 +27,7 @@ public class NoteTest {
         String json = "{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_time\",\"user_id\":\"user_id\",\"user_name\":\"user_name\",\"version_id\":\"version_id\",\"comment\":[{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"},{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"}]}";
 
         assertEquals(json, jsonInString);
-    }
+    }*/
 
     @Test
     public void tesDeStyle() throws IOException {

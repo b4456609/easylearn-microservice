@@ -4,18 +4,16 @@
 package ntou.bernie.easylearn.user.resource;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
-import ntou.bernie.easylearn.user.core.Bookmark;
 import ntou.bernie.easylearn.user.core.Folder;
 import ntou.bernie.easylearn.user.core.User;
 import ntou.bernie.easylearn.user.db.UserDAO;
+import ntou.bernie.easylearn.user.represention.UserDeserializer;
+import ntou.bernie.easylearn.user.represention.UserSerializer;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author bernie
@@ -45,14 +42,14 @@ public class UserResource {
         this.userDAO = userDAO;
     }
 
-    @GET
+/*    @GET
     @Timed
     @Path("/{id}/folder")
     public List<Folder> getUserFolder(@PathParam("id") String userId) {
         if (userId == null)
             throw new WebApplicationException(400);
         return userDAO.getByUserId(userId).getFolder();
-    }
+    }*/
 
     @GET
     @Timed
@@ -68,12 +65,6 @@ public class UserResource {
         return packIds;
     }
 
-    @POST
-    @Timed
-    public User addUser(@Valid User user) {
-        return user;
-    }
-
 
     @POST
     @Timed
@@ -82,45 +73,15 @@ public class UserResource {
         LOGGER.debug("Request content", userJson);
         if (userJson == null)
             throw new WebApplicationException(400);
+
+
+        ObjectMapper objectMapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
+
         try {
-            LOGGER.info("map to user object");
-            // map to comment object
-            ObjectMapper objectMapper = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-
-            JsonNode jsonNode = objectMapper.readTree(userJson);
-
-            //user json
-            JsonNode userJsonNode = jsonNode.get("user");
-            User user = objectMapper.readValue(userJsonNode.toString(), User.class);
-
-            //folder json
-            JsonNode folderJsonNode = jsonNode.get("folder");
-            List<Folder> folder = objectMapper.readValue(folderJsonNode.toString(), new TypeReference<List<Folder>>() {
-            });
-            user.setFolder(folder);
-
-            //bookmark json
-            Bookmark bookmark = new Bookmark();
-            user.setBookmark(new ArrayList());
-//            String bookmarkJson = extractBookmark(userJson);
-//            List<Bookmark> bookmark = objectMapper.readValue(jsonNode.toString(), new TypeReference<List<Bookmark>>() {
-//            });
-//            user.setBookmark(bookmark);
-
-            //validation json
-            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-            Validator validator = factory.getValidator();
-            Set<ConstraintViolation<User>> constraintViolations =
-                    validator.validate(user);
-            if (constraintViolations.size() > 0) {
-                LOGGER.info("validation not pass");
-                for (ConstraintViolation<User> violation : constraintViolations) {
-                    LOGGER.info(violation.toString());
-                }
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
-            }
+            //deserilizer
+            User user = UserDeserializer.userDeserilizer(userJson, objectMapper);
 
             // check if new user
             if (!userDAO.isExist(user.getId())) {
@@ -146,24 +107,15 @@ public class UserResource {
             //response user json
             LOGGER.info("Build response");
             User respUser = userDAO.getByUserId(user.getId());
-            ObjectNode userNode = objectMapper.valueToTree(respUser);
-            JsonNode folderNode = userNode.get("folder");
-            userNode.remove("bookmark");
-            userNode.remove("folder");
-
-            ObjectNode respNode = objectMapper.createObjectNode();
-            respNode.set("user", userNode);
-            respNode.set("folder", folderNode);
-
-            String reponseJson = objectMapper.writeValueAsString(respNode);
+            String reponseJson = UserSerializer.userSerilizer(respUser,objectMapper);
             LOGGER.debug(reponseJson);
             return Response.ok(reponseJson).build();
-
         } catch (IOException e) {
             LOGGER.warn("json error", e);
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
     }
+/*
 
     private String extractBookmark(String userJson) throws IOException {
         //bookmark json
@@ -180,5 +132,6 @@ public class UserResource {
         }
         return bookmarksJsonNode.toString();
     }
+*/
 
 }

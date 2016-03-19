@@ -97,7 +97,7 @@ public class PackResource {
                     try {
                         String versionId = versionNode.get("id").asText();
                         JsonNode noteJson = packNoteClient.getNoteByVersionId(versionId, rc);
-                        LOGGER.debug("pack's notes " +noteJson.toString());
+                        LOGGER.debug("pack's notes " + noteJson.toString());
                         ((ObjectNode) versionNode).set("note", noteJson);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -120,50 +120,6 @@ public class PackResource {
             e1.printStackTrace();
         }
         return Response.serverError().build();
-    }
-
-    @GET
-    @Path("/{packId}")
-    @Timed
-    public Pack getPack(@PathParam("packId") String packId) {
-        // query from db
-        Pack pack = packDAO.getPackById(packId);
-        if (pack == null)
-            throw new WebApplicationException(404);
-        return pack;
-    }
-
-    @GET
-    @Path("/{packId}/version")
-    @Timed
-    public List<Version> getPackVersion(@PathParam("packId") String packId) {
-        // query from db
-        Pack pack = packDAO.getPackById(packId);
-        if (pack == null)
-            throw new WebApplicationException(404);
-        return pack.getVersion();
-    }
-
-    @POST
-    @Timed
-    public Response addPack(String packJson) {
-        try {
-            // map to comment object
-            Pack pack = objectMapper.readValue(packJson, Pack.class);
-
-            // pack json validation
-            packValidation(pack);
-
-            // save to db
-            packDAO.save(pack);
-
-            // build response
-            URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();
-            return Response.created(userUri).build();
-        } catch (IOException e) {
-            LOGGER.info("json pharse problem", e);
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
     }
 
     @POST
@@ -203,7 +159,52 @@ public class PackResource {
         }
     }
 
-    @POST
+    /*@GET
+    @Path("/{packId}")
+    @Timed
+    public Pack getPack(@PathParam("packId") String packId) {
+        // query from db
+        Pack pack = packDAO.getPackById(packId);
+        if (pack == null)
+            throw new WebApplicationException(404);
+        return pack;
+    }
+
+    @GET
+    @Path("/{packId}/version")
+    @Timed
+    public List<Version> getPackVersion(@PathParam("packId") String packId) {
+        // query from db
+        Pack pack = packDAO.getPackById(packId);
+        if (pack == null)
+            throw new WebApplicationException(404);
+        return pack.getVersion();
+    }
+*/
+    /*@POST
+    @Timed
+    public Response addPack(String packJson) {
+        try {
+            // map to comment object
+            Pack pack = objectMapper.readValue(packJson, Pack.class);
+
+            // pack json validation
+            packValidation(pack);
+
+            // save to db
+            packDAO.save(pack);
+
+            // build response
+            URI userUri = uriInfo.getAbsolutePathBuilder().path(pack.getId()).build();
+            return Response.created(userUri).build();
+        } catch (IOException e) {
+            LOGGER.info("json pharse problem", e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }*/
+
+
+    /*@POST
     @Path("/sync/single")
     @Timed
     public Response syncPack(String packJson) {
@@ -224,7 +225,7 @@ public class PackResource {
             LOGGER.info("json pharse problem" + e);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-    }
+    }*/
 
     private void packValidation(Pack pack) {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
