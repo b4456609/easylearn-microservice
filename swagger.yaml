@@ -237,6 +237,23 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Pack'
+  /file:
+    post:
+      summary: Upload infomation
+      description: |
+        Include delete hash that we could manage the uplaod images
+      parameters:
+        - name: imgItem
+          in: body
+          description: image info
+          required: true
+          schema:
+            $ref: '#/definitions/ImgItem'
+      tags:
+        - Note
+      responses:
+        200:
+          description: success sync
 
 definitions:
   User:
@@ -382,3 +399,10 @@ definitions:
               type: string
             content:
               type: string
+  ImgItem:
+    type: object
+    properties:
+      id:
+        type: string
+      deletehash:
+        type: string
