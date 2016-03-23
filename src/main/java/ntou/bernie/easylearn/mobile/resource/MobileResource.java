@@ -1,10 +1,14 @@
 package ntou.bernie.easylearn.mobile.resource;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import ntou.bernie.easylearn.mobile.core.ImgItem;
 import ntou.bernie.easylearn.pack.resource.PackResource;
 import ntou.bernie.easylearn.user.resource.UserResource;
+import org.mongodb.morphia.Datastore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,55 +25,21 @@ import java.io.IOException;
 /**
  * Created by bernie on 2016/2/19.
  */
-@Path("/sync")
+@Path("/file")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MobileResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(MobileResource.class);
     @Context
     private ResourceContext rc;
+    private Datastore datastore;
+    MobileResource(Datastore datastore){
+        this.datastore = datastore;
+    }
 
     @POST
-    public Response sync(String syncJson) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        LOGGER.debug("sync Json content " + syncJson);
-
-        //sync user
-        UserResource userResource = rc.getResource(UserResource.class);
-        Response userResp = userResource.syncUser(syncJson);
-        LOGGER.debug("Finish user sync " + userResp.toString());
-
-        //sync pack
-        PackResource packResource = rc.getResource(PackResource.class);
-        Response packResp = packResource.syncPacks(syncJson);
-        LOGGER.debug("Finish pack sync " + packResp.toString());
-
-        //if sync not ok return server error
-        if (userResp.getStatus() != 200 || packResp.getStatus() != 200)
-            return Response.serverError().build();
-
-        //get response user json node
-        String userJson = (String) userResp.getEntity();
-        LOGGER.debug(userJson);
-
-        try {
-            ObjectNode respNode = (ObjectNode) objectMapper.readTree(userJson);
-            String userId = respNode.get("user").get("id").textValue();
-            Response packsResp = packResource.getUserPacks(userId);
-            JsonNode packsNode = objectMapper.readTree((String) packsResp.getEntity());
-
-            for (final JsonNode pack : packsNode) {
-                respNode.set(pack.get("id").asText(), pack);
-            }
-
-            LOGGER.debug(respNode.toString());
-
-            return Response.ok(respNode.toString()).build();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Response.serverError().build();
-        }
-
+    public Response sync(ImgItem imgItem) {
+        datastore.save(imgItem);
+        return Response.ok().build();
     }
 }
