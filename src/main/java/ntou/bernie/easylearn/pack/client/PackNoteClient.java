@@ -21,11 +21,6 @@ public class PackNoteClient {
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
     }
 
-    public void syncNote(String packJson, ResourceContext rc) {
-        NoteResource noteResource = rc.getResource(NoteResource.class);
-        noteResource.syncNote(packJson);
-    }
-
     public JsonNode getNoteByVersionId(String versionId, ResourceContext rc) throws IOException {
         NoteResource noteResource = rc.getResource(NoteResource.class);
         JsonNode jsonNode = objectMapper.valueToTree(noteResource.getNote(versionId));

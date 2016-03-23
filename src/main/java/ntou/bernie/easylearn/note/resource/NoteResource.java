@@ -5,27 +5,20 @@ package ntou.bernie.easylearn.note.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DuplicateKeyException;
 import ntou.bernie.easylearn.note.core.Note;
-import org.mongodb.morphia.Datastore;
+import ntou.bernie.easylearn.note.db.NoteDAO;
+import ntou.bernie.easylearn.note.representation.NotesDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author bernie
@@ -40,10 +33,10 @@ public class NoteResource {
             .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
     @Context
     UriInfo uriInfo;
-    private Datastore datastore;
+    private NoteDAO noteDAO;
 
-    public NoteResource(Datastore datastore) {
-        this.datastore = datastore;
+    public NoteResource(NoteDAO noteDAO) {
+        this.noteDAO = noteDAO;
     }
 
 
@@ -51,7 +44,7 @@ public class NoteResource {
     @Path("/{versionId}")
     @Timed
     public List<Note> getNote(@PathParam("versionId") String versionId) {
-        List<Note> note = datastore.createQuery(Note.class).field("versionId").equal(versionId).asList();
+        List<Note> note = noteDAO.getNotesByVersionId(versionId);
         if (note == null)
             throw new WebApplicationException(404);
         LOGGER.debug("getNote " + versionId + note.toString());
@@ -83,45 +76,13 @@ public class NoteResource {
     @POST
     @Path("/sync")
     @Timed
-    public Response syncNote(String packJson) {
+    public Response syncNotes(String packsJson) {
         try {
-            LOGGER.debug(packJson);
+            LOGGER.debug(packsJson);
 
-            //get pack id
-            JsonNode jsonNode = mapper.readTree(packJson);
-            Iterator<JsonNode> versionsNode = jsonNode.get("version").elements();
-            List<Note> notesArray = new ArrayList<Note>();
+            NotesDeserializer notesDeserializer = new NotesDeserializer();
+            final List<Note> notes = notesDeserializer.deserializer(packsJson, mapper);
 
-            while (versionsNode.hasNext()) {
-                JsonNode version = versionsNode.next();
-                String versionId = version.get("id").asText();
-                Iterator<JsonNode> notes = version.get("note").elements();
-                while (notes.hasNext()) {
-                    ObjectNode noteJsonNode = (ObjectNode) notes.next();
-                    noteJsonNode.put("version_id", versionId);
-                    Note note = mapper.readValue(noteJsonNode.toString(), Note.class);
-                    notesArray.add(note);
-                }
-            }
-
-//            //json path get pack's note
-//            ReadContext ctx = JsonPath.parse(packJson);
-//            List<String> notesJson = ctx.read("$.version[*].note.*");
-//
-//            //map to class
-//            List<Note> notes = mapper.readValue(notesJson.toString(), new TypeReference<List<Note>>() {
-//            });
-
-            LOGGER.debug(notesArray.toString());
-            for (Note note : notesArray) {
-                if (isValid(note)) {
-                    LOGGER.debug("Note is valid " + note);
-                    note.sync(datastore);
-                } else {
-                    LOGGER.debug("Note is not valid " + note);
-                }
-                //not yet implement
-            }
 
             UriBuilder ub = uriInfo.getAbsolutePathBuilder();
             URI userUri = ub.
@@ -138,16 +99,4 @@ public class NoteResource {
         }
     }
 
-    private boolean isValid(Note note) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        //json validation
-        Set<ConstraintViolation<Note>> constraintViolations = validator.validate(note);
-        for (ConstraintViolation<Note> constraintViolation : constraintViolations) {
-            LOGGER.warn(constraintViolation.toString());
-        }
-        if (constraintViolations.size() > 0) {
-            return false;
-        }
-        return true;
-    }
 }

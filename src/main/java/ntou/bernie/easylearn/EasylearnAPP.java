@@ -9,6 +9,8 @@ import io.dropwizard.setup.Environment;
 import ntou.bernie.easylearn.db.MorphiaService;
 import ntou.bernie.easylearn.health.DatabaseHealthCheck;
 import ntou.bernie.easylearn.mobile.resource.MobileResource;
+import ntou.bernie.easylearn.note.core.Note;
+import ntou.bernie.easylearn.note.db.NoteDAOImp;
 import ntou.bernie.easylearn.note.resource.CommentResource;
 import ntou.bernie.easylearn.note.resource.NoteResource;
 import ntou.bernie.easylearn.pack.core.Pack;
@@ -63,7 +65,7 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
         UserResource userResource = new UserResource(new UserDAOImp(User.class, morphia.getDatastore()));
         environment.jersey().register(userResource);
 
-        NoteResource noteResource = new NoteResource(morphia.getDatastore());
+        NoteResource noteResource = new NoteResource(new NoteDAOImp(Note.class, morphia.getDatastore()));
         environment.jersey().register(noteResource);
 
         CommentResource commentResource = new CommentResource(morphia.getDatastore());
