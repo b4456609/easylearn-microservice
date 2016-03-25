@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ntou.bernie.easylearn.note.core.Comment;
 import ntou.bernie.easylearn.note.core.Note;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.query.Query;
-import org.mongodb.morphia.query.UpdateOperations;
+import ntou.bernie.easylearn.note.db.NoteDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,20 +22,20 @@ public class CommentResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentResource.class);
     @Context
     UriInfo uriInfo;
-    private Datastore datastore;
+    private NoteDAO noteDAO;
 
-    public CommentResource(Datastore datastore) {
-        this.datastore = datastore;
+    public CommentResource(NoteDAO noteDAO) {
+        this.noteDAO = noteDAO;
     }
 
     @GET
     @Timed
     public List<Comment> getCommentByNoteId(@PathParam("noteId") String noteId) {
-        Note note = datastore.createQuery(Note.class).field("id").equal(noteId).get();
-        if (note == null) {
+        List<Comment> comments = noteDAO.getCommentsByNoteId(noteId);
+        if (comments == null) {
             throw new WebApplicationException(404);
         }
-        return note.getComment();
+        return comments;
     }
 
     @POST
@@ -48,18 +46,13 @@ public class CommentResource {
 
         try {
             // map to comment object
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            Comment comment;
-            comment = objectMapper.readValue(commentJson, Comment.class);
+            ObjectMapper objectMapper = new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            Comment comment = objectMapper.readValue(commentJson, Comment.class);
+            comment.setNoteId(noteId);
 
-            // query note object
-            final Query<Note> noteQuery = datastore.createQuery(Note.class).field("id").equal(noteId);
-            // operation on query
-            final UpdateOperations<Note> updateOperations = datastore.createUpdateOperations(Note.class).add("comments",
-                    comment);
-            // update db
-            datastore.update(noteQuery, updateOperations);
+            noteDAO.addComment(noteId, comment);
+
         } catch (IOException e) {
             LOGGER.info("json pharse problem", e);
             return Response.status(Response.Status.BAD_REQUEST).build();
