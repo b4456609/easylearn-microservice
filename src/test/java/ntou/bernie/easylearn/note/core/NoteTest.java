@@ -1,11 +1,13 @@
 package ntou.bernie.easylearn.note.core;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.junit.Assert.assertEquals;
 
 public class NoteTest {
@@ -28,13 +30,15 @@ public class NoteTest {
 
     @Test
     public void tesDeStyle() throws IOException {
-        String json = "{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_time\",\"user_id\":\"user_id\",\"user_name\":\"user_name\",\"version_id\":\"version_id\",\"comment\":[{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"},{\"id\":\"id\",\"content\":\"content\",\"create_time\":\"create_timej\",\"user_id\":\"fasdfID\",\"user_name\":\"name\"}]}";
+        String json = fixture("note/notes.json");
+
 
         ObjectMapper mapper = new ObjectMapper()
                 .setPropertyNamingStrategy(PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
-        Note note = mapper.readValue(json, Note.class);
+        JsonNode jsonNode = mapper.readTree(json).get(0);
+        Note note = mapper.readValue(jsonNode.toString(), Note.class);
 
 
-        assertEquals("create_time", note.getCreateTime());
+        assertEquals(1439381999000L, note.getCreateTime());
     }
 }

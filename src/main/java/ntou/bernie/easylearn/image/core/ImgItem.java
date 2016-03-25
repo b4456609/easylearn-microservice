@@ -1,4 +1,4 @@
-package ntou.bernie.easylearn.mobile.core;
+package ntou.bernie.easylearn.image.core;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.bson.types.ObjectId;
