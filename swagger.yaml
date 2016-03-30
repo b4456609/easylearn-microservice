@@ -40,9 +40,7 @@ paths:
                   $ref: '#/definitions/Pack'
 
       tags:
-        - User
-        - Pack
-        - Note
+        - Mobile
       responses:
         200:
           description: Return use's information
@@ -104,7 +102,7 @@ paths:
           required: true
           type: string
       tags:
-        - Pack
+        - User
       responses:
         200:
           description: Return user owned pack
@@ -115,7 +113,7 @@ paths:
               description: pack id
         400:
           description: id validation not pass
-  /user/{id}/sync:
+  /user/sync:
     post:
       summary: sync user setting
       description:
@@ -123,11 +121,6 @@ paths:
       produces:
       - application/json
       parameters:
-        - name: id
-          in: path
-          description: User facebook's id.
-          required: true
-          type: string
         - name: user info
           in: body
           description: user information object
@@ -237,7 +230,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Pack'
-  /file:
+  /image:
     post:
       summary: Upload infomation
       description: |
@@ -250,7 +243,7 @@ paths:
           schema:
             $ref: '#/definitions/ImgItem'
       tags:
-        - Note
+        - Image
       responses:
         200:
           description: success sync
