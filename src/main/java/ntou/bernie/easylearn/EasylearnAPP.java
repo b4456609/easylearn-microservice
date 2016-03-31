@@ -68,7 +68,7 @@ public class EasylearnAPP extends Application<EasylearnAPPConfiguration> {
         NoteResource noteResource = new NoteResource(new NoteDAOImp(Note.class, morphia.getDatastore()));
         environment.jersey().register(noteResource);
 
-        CommentResource commentResource = new CommentResource(morphia.getDatastore());
+        CommentResource commentResource = new CommentResource(new NoteDAOImp(Note.class, morphia.getDatastore()));
         environment.jersey().register(commentResource);
 
         PackResource packResource = new PackResource(new PackDAOImp(Pack.class, morphia.getDatastore()));
